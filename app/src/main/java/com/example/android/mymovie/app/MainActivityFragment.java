@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -39,7 +41,7 @@ public class MainActivityFragment extends Fragment {
 
         // Add this line in order for this fragment to handle menu events.
         //setHasOptionsMenu(true);
-        new FeatchMovieTask().execute();
+       // new FeatchMovieTask().execute();
     }
 
 
@@ -51,18 +53,37 @@ public class MainActivityFragment extends Fragment {
 
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        mMoviesAdapter = new ImageAdapter(getActivity(), "http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg");
+        // references to our images
+         Integer[] mThumbIds ={
+                R.drawable.download8, R.drawable.download7,
+                R.drawable.download9, R.drawable.download1,
+
+        };
+
+        GridView mMoviesGrid  = (GridView) rootView.findViewById(R.id.movieGrid);
+        mMoviesGrid.setAdapter(new ImageAdapter(getContext(),mThumbIds));
+
+        return rootView;
+    }
+
+
+
+
+
+      //  int[] imageId =  {
+        //        R.drawable.download8};
+       /* mMoviesAdapter = new ImageAdapter(getActivity(),imageId); //"http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg");
 
         GridView mMoviesGrid  = (GridView) rootView.findViewById(R.id.movieGrid);
        // mMoviesAdapter=new ImageAdapter ();
         mMoviesGrid.setAdapter(mMoviesAdapter);
-        ImageView imageView = (ImageView) rootView.findViewById(R.id.movie_image);
+      //  ImageView imageView = (ImageView) rootView.findViewById(R.id.movie_image);
        // Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg").into(imageView);
      return rootView;
     }
 
 
-    public class FeatchMovieTask extends AsyncTask<Void, Void, String> {
+   /* public class FeatchMovieTask extends AsyncTask<Void, Void, String> {
 
         private final String LOG_TAG = FeatchMovieTask.class.getSimpleName();
         @Override
@@ -94,8 +115,8 @@ public class MainActivityFragment extends Fragment {
            // GridView gridView = (GridView)
 
             //gridView.setAdapter(mMoviesAdapter);
-        }
+        }*/
 
     }
 
-}
+

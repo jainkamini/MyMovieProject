@@ -2,11 +2,13 @@ package com.example.android.mymovie.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,66 +22,88 @@ import java.util.ArrayList;
  */
 public class ImageAdapter extends BaseAdapter {
 
+
+
+
     private Context mContext;
-    private String imageUrls;
+  private   Integer[] mThumbIds;
 
-
-
-    public ImageAdapter(Context mContext, String imageUrls) {
-        this.mContext = mContext;
-        this.imageUrls = imageUrls;
+    public ImageAdapter(Context c,Integer [] ThumbIds  ) {
+        mContext = c;
+        mThumbIds=ThumbIds;
     }
 
-
-    @Override
     public int getCount() {
-        return 0;
+        return mThumbIds.length;
     }
 
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        View gridView;
-
-        if (convertView == null) {
-
-            gridView = new View(mContext);
-
-            // get layout from mobile.xml
-            gridView = inflater.inflate(R.layout.fragment_main, null);
-
-
-            // set image based on selected text
-            ImageView imageView = (ImageView) gridView
-                    .findViewById(R.id.movie_image);
-
-            Picasso.with(mContext).load(imageUrls).into(imageView);
-
-
-
-        } else {
-            gridView = (View) convertView;
-        }
-
-        return gridView;
-
-       /* ImageView imageView;
-        imageView = (ImageView) convertView.findViewById(R.id.movie_image);
-
-        Picasso.with(mContext).load(imageUrls).into(imageView);
-        return imageView;*/
+    public Object getItem(int position) {
+        return null;
     }
 
-    @Override
     public long getItemId(int position) {
         return 0;
     }
 
-    @Override
-    public Object getItem(int position) {
-        return null;
+    /*// create a new ImageView for each item referenced by the Adapter
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ImageView imageView;
+
+        if (convertView == null) {
+            // if it's not recycled, initialize some attributes
+
+           // imageView=(ImageView) convertView.findViewById(R.id.movie_image);
+
+            imageView = new ImageView(mContext);
+            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setPadding(8, 8, 8, 8);
+        } else {
+            imageView = (ImageView) convertView;
+        }
+
+      //  imageView.setImageResource(mThumbIds[position]);
+       // Picasso.with(mContext).load(mThumbIds[position]).into(imageView);
+        Picasso.with(mContext).load(mThumbIds[position]).into(imageView);
+        return imageView;
+    }*/
+
+
+    // create a new ImageView for each item referenced by the Adapter
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+
+        ViewHolder holder = null;
+
+        if (convertView == null) {
+
+
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.movie_list, parent, false);
+           // convertView = mInflater.inflate(R.layout.movie_list, null);
+            holder = new ViewHolder();
+            holder.imageView = (ImageView)convertView.findViewById(R.id.movie_image);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder)convertView.getTag();
+        }
+
+      //  holder.textView.setText(mData.get(position));
+
+
+        holder. imageView.setImageResource(mThumbIds[position]);
+        // Picasso.with(mContext).load(mThumbIds[position]).into(imageView);
+       Picasso.with(mContext).load(mThumbIds[position]).into(holder.imageView);
+        return convertView;
     }
+
+
+    public static class ViewHolder {
+        public ImageView imageView;
+    }
+   /* // references to our images
+    private Integer[] mThumbIds = {
+            R.drawable.download8, R.drawable.download7,
+            R.drawable.download9, R.drawable.download1,
+
+    };*/
 }
