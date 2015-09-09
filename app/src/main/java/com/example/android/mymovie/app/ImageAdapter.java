@@ -93,6 +93,11 @@ public class ImageAdapter extends BaseAdapter {
         holder. imageView.setImageResource(mThumbIds[position]);
         // Picasso.with(mContext).load(mThumbIds[position]).into(imageView);
        Picasso.with(mContext).load(mThumbIds[position]).into(holder.imageView);
+       // Picasso.with(mContext).load("http://image.tmdb.org/t/p/w185/" + mThumbIds[position]).into(holder.imageView);
+        //Picasso.with(getContext())
+          //      .load(artistViews.images.get(1).url)
+            //    .resize(200, 200)
+              //  .into(imageView);
         return convertView;
     }
 
