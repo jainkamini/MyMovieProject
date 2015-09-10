@@ -90,9 +90,11 @@ public class ImageAdapter extends BaseAdapter {
       //  holder.textView.setText(mData.get(position));
 
 
-        holder. imageView.setImageResource(mThumbIds[position]);
+      //  holder. imageView.setImageResource(mThumbIds[position]);
+
+        Picasso.with(mContext).load("http://i.imgur.com/DvpvklR.png").into(holder. imageView);
         // Picasso.with(mContext).load(mThumbIds[position]).into(imageView);
-       Picasso.with(mContext).load(mThumbIds[position]).into(holder.imageView);
+     //  Picasso.with(mContext).load(http://i.imgur.com/DvpvklR.png").into(holder.imageView);
        // Picasso.with(mContext).load("http://image.tmdb.org/t/p/w185/" + mThumbIds[position]).into(holder.imageView);
         //Picasso.with(getContext())
           //      .load(artistViews.images.get(1).url)
