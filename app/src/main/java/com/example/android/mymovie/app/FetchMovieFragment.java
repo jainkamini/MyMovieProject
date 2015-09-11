@@ -11,16 +11,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,10 +22,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import android.net.Uri;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,27 +32,14 @@ import org.json.JSONObject;
  * A placeholder fragment containing a simple view.
  */
 public class FetchMovieFragment extends Fragment {
-    private ArrayAdapter<String> mPosterAdapter;
-   // private testclass mPosterAdapter;
 
- //   public ArrayList<String> movieList = new ArrayList<String>();
-   // private ArrayAdapter<String> mPosterAdapter;
-
-  //  static ArrayList<String> movieList = new ArrayList<String>();
-
+//Custome Image Adapter
+    ImageAdapternew mMovieAdapter;
+//Movie List
+    public static ArrayList<String> MovieURL = new ArrayList();
     private GridView mMoviesGrid;
-    private ImageAdapter mMoviesAdapter;
-   // ArrayList<Item> gridArray = new ArrayList<Item>();
 
 
-
-
-    // private ArrayAdapter<String> mPosterAdapter;
-
-   // static ArrayList<String> movieList = new ArrayList<String>();
-    //public ArrayList<String> mPosterMoviePaths;
-  //  static ArrayList<String> movieList = new ArrayList<String>();
-    // String mMovieJsonStr = null;
 
     public FetchMovieFragment() {
     }
@@ -73,9 +50,10 @@ public class FetchMovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         // Add this line in order for this fragment to handle menu events.
        setHasOptionsMenu(true);
-        // new FeatchMovieTask().execute();
+
     }
 
     @Override
@@ -107,72 +85,41 @@ public class FetchMovieFragment extends Fragment {
 
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        // references to our images
 
-      //* Integer[] mThumbIds ={
-             //   R.drawable.download8, R.drawable.download7,
-               // R.drawable.download9, R.drawable.download1,
-
-       // };
-//*
-
-      //  mMoviesGrid.setAdapter(new ImageAdapter(getContext(),mThumbIds));
-     //   http://image.tmdb.org/t/p/w185/sLbXneTErDvS3HIjqRWQJPiZ4Ci.jpg,/s5uMY8ooGRZOL0oe4sIvnlTsYQO.jpg
-         String[] movieList={"http://i.imgur.com/DvpvklR.png",
+       /* String [] movieList= new String[]{"http://i.imgur.com/DvpvklR.png",
                  "http://image.tmdb.org/t/p/w185/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg"
          , "http://image.tmdb.org/t/p/w185/kqjL17yufvn9OVLyXYpvtyrFfak.jpg",
                 " http://image.tmdb.org/t/p/w185/sLbXneTErDvS3HIjqRWQJPiZ4Ci.jpg",
-                 "http://image.tmdb.org/t/p/w185/s5uMY8ooGRZOL0oe4sIvnlTsYQO.jpg"};
-         // };
-       // movieList.add("R.drawable.download1");
-     //   List<String> movieLis1t = new ArrayList<String>(Arrays.asList(movieList));
-       // List<String> movelist = new ArrayList<String>(Arrays.asList(movieList));
+                 "http://image.tmdb.org/t/p/w185/s5uMY8ooGRZOL0oe4sIvnlTsYQO.jpg"};*/
+//Initialize movie List
+        List<String> MovieURL = new ArrayList<String>( );
 
+//call the adapter for constructor
+        mMovieAdapter = new ImageAdapternew(this.getActivity(), MovieURL);
 
-        mPosterAdapter = new ImageAdapternew(this.getActivity().getApplicationContext(), movieList);
         GridView mMoviesGrid  = (GridView) rootView.findViewById(R.id.movieGrid);
         //Log.v("movieList size is", String.valueOf(movieList.size()));
-        //GridView mMoviesGrid  = (GridView) rootView.findViewById(R.id.movieGrid);
-       mMoviesGrid.setAdapter(mPosterAdapter);
 
-      //  "drawable://" + getResources().getIdentifier("img"+i, "drawable", get())
-       // gridview.setAdapter(new ImageAdapter(MainActivity.this,R.layout.grid_layout , imgArray, titleArray));
-
-      /* Integer[] mThumbIds ={
-              R.drawable.download7
-
-        };
-
-      //  List<String> weekForecast = new ArrayList<String>(Arrays.asList(mThumbIds));
-        GridView mMoviesGrid  = (GridView) rootView.findViewById(R.id.movieGrid);
-
-       // testclass imageAdapter = new testclass(getActivity(),weekForecast);
-       mMoviesGrid.setAdapter(new ImageAdapter(getContext(),mThumbIds));*/
-
-
-
-
-
-
-
-
-
+        mMoviesGrid.setAdapter(mMovieAdapter);
 
 
 
         return rootView;
     }
-
-    /*private void updateMovies(){
-        FetchMovieTask movieInfo = new FetchMovieTask();
-        movieInfo.execute();
-    }*/
-
-  /*  @Override
-    public void onStart(){
+    private void updateMovie() {
+        FetchMovieTask movieTask = new FetchMovieTask();
+        movieTask.execute();
+    }
+//start the activity
+    @Override
+    public void onStart() {
         super.onStart();
-        updateMovies();
-    }*/
+        FetchMovieTask movieTask = new FetchMovieTask();
+        movieTask.execute("popularity.desc");
+
+
+    }
+
 
 
 
@@ -195,12 +142,6 @@ public class FetchMovieFragment extends Fragment {
                 throws JSONException {
 
             // These are the names of the JSON objects that need to be extracted.
-       //* final String OWM_LIST = "list";
-      //  final String OWM_WEATHER = "weather";
-        //final String OWM_TEMPERATURE = "temp";
-        //final String OWM_MAX = "max";
-        //final String OWM_MIN = "min";
-      //  final String OWM_DESCRIPTION = "main";*//*
 
             final String TMB_RESULTS = "results";
             final String TMB_POSTER = "poster_path";
@@ -231,7 +172,7 @@ public class FetchMovieFragment extends Fragment {
                 //only need to return the poster for now
                 //but it doesn't hurt to have the other code already
                 resultStrs[i] = "http://image.tmdb.org/t/p/w185"+poster;
-                Log.v(LOG_TAG, poster.toString());
+                Log.v(LOG_TAG, resultStrs[i].toString());
                 //movieList.add(poster);
             }
 
@@ -306,7 +247,7 @@ public class FetchMovieFragment extends Fragment {
                 Log.v(LOG_TAG, "Fetchmovie string: " + fetchtMovieJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
+                // If the code didn't successfully get the movie data, there's no point in attemping
                 // to parse it.
 
 
@@ -336,14 +277,20 @@ public class FetchMovieFragment extends Fragment {
         @Override
         protected void onPostExecute(String[] result) {
 
-
-           // mPosterAdapter = new testclass(getActivity(), movieList);
+            super.onPostExecute(result);
+           //clear movie list and adapter
             if (result != null) {
-                mPosterAdapter.clear();
+                MovieURL.clear();
+                mMovieAdapter.clear();
+
                 for (String resultStrs : result) {
-                    mPosterAdapter.addAll(resultStrs);
-                }
-               // mPosterAdapter.notifyDataSetChanged();
+
+
+
+                        MovieURL.add(resultStrs);
+                    mMovieAdapter.addAll(resultStrs);
+                    }
+
 
                 // New data is back from the server.  Hooray!
             }

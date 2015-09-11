@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,14 +21,20 @@ public class ImageAdapternew extends ArrayAdapter
 {
     private Context context;
     private LayoutInflater inflater;
-    //List<String> items;
-    private String[] imageUrls;
 
-    public ImageAdapternew(Context context, String[] imageUrls) {
-        super(context, R.layout.movie_list, imageUrls);
+   // private ArrayList MovieDataStructure mObjects;
+    //List<String> items;
+ //   private String[] imageUrls;
+    private List urls = new ArrayList();
+
+    public ImageAdapternew(Context context, List<String> urlslist) {
+        super(context, R.layout.movie_list,  urlslist);
+
+
 
         this.context = context;
-       this.imageUrls = imageUrls;
+     //  this.imageUrls = imageUrls;
+        this.urls = urlslist;
 
         inflater = LayoutInflater.from(context);
     }
@@ -38,7 +45,7 @@ public class ImageAdapternew extends ArrayAdapter
 
         public View getView ( int position, View convertView, ViewGroup parent){
             ViewHolder holder = null;
-
+        String url = getItem(position).toString();
             if (convertView == null) {
 
 
@@ -55,8 +62,9 @@ public class ImageAdapternew extends ArrayAdapter
 
 
             //  holder. imageView.setImageResource(mThumbIds[position]);
-
-            Picasso.with(context).load(imageUrls[position]).fit().into(holder.imageView);
+        Picasso.with(context).load(url).fit().into(holder.imageView);
+           // Picasso.with(context).load(imageUrls[position]).fit().into(holder.imageView);
+       // Picasso.with(context).load(items[position].tostring).fit().into(holder.imageView);
 
             return convertView;
         }
