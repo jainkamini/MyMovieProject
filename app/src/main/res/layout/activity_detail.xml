@@ -1,0 +1,12 @@
+<!--This is old code which i replace with new code-->
+<!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/fragment"
+    android:name="com.example.android.mymovie.app.DetailActivityFragment"
+    tools:layout="@layout/fragment_detail" android:layout_width="match_parent"
+    android:layout_height="match_parent"  />-->
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools" android:id="@+id/container"
+android:layout_width="match_parent" android:layout_height="match_parent"
+tools:context="com.example.android.MyMovie.app.DetailActivity" tools:ignore="MergeRootFrame" />

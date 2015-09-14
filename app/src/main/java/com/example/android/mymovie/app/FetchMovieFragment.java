@@ -1,5 +1,7 @@
 package com.example.android.mymovie.app;
 
+import android.content.Intent;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -11,8 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
-
+import android.widget.Toast;
 
 
 import java.io.BufferedReader;
@@ -92,7 +95,7 @@ public class FetchMovieFragment extends Fragment {
                 " http://image.tmdb.org/t/p/w185/sLbXneTErDvS3HIjqRWQJPiZ4Ci.jpg",
                  "http://image.tmdb.org/t/p/w185/s5uMY8ooGRZOL0oe4sIvnlTsYQO.jpg"};*/
 //Initialize movie List
-        List<String> MovieURL = new ArrayList<String>( );
+        final List<String> MovieURL = new ArrayList<String>( );
 
 //call the adapter for constructor
         mMovieAdapter = new ImageAdapternew(this.getActivity(), MovieURL);
@@ -103,6 +106,19 @@ public class FetchMovieFragment extends Fragment {
         mMoviesGrid.setAdapter(mMovieAdapter);
 
 
+        mMoviesGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String item =(String)mMovieAdapter.getItem(position);
+               // String Slecteditem= MovieURL[position];
+              //  Movie movie = (Movie) mMovieAdapter.getItemAtPosition(position);
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                .putExtra(Intent.EXTRA_TEXT, item);
+                startActivity(intent);
+                // Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return rootView;
     }
@@ -196,7 +212,8 @@ public class FetchMovieFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String fetchtMovieJsonStr = null;
             // String format = "json";
-            String apikey = "xxxx";
+          //  String apikey = "xxxx";
+            String apikey = "b85cf4603ce5916a993dd400866808bc";
 
 
             try {
