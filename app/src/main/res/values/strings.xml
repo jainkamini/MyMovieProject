@@ -4,5 +4,19 @@
     <string name="action_settings">Settings</string>
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="title_activity_detail">Details</string>
+       <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
+       <string name="pref_sortorder_label">Sort Order</string>
+    <string name="pref_sortorder_label_popularity">Most- Popular</string>
+    <string name="pref_sortorder_label_highestvote">Highest- Rated</string>
+
+    <!-- Key name for temperature unit preference in SharedPreferences [CHAR LIMIT=NONE] -->
+        <string name="pref_sortorder_key" translatable="false">sort_by</string>
+
+        <!-- Value in SharedPreferences for metric temperature unit option [CHAR LIMIT=NONE] -->
+        <string name="pref_sortorder_mostpopular" translatable="false">popularity.desc</string>
+
+        <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
+        <string name="pref_sortorder_highestrated" translatable="false">vote_average.desc </string>
+
 
 </resources>

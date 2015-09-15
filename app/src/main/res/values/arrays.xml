@@ -1,2 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+
+
+    <string-array name="pref_sortorder_options">
+        <item>@string/pref_sortorder_label_popularity</item>
+        <item>@string/pref_sortorder_label_highestvote</item>
+    </string-array>
+
+    <string-array name="pref_sortorder_values">
+        <item>@string/pref_sortorder_mostpopular</item>
+        <item>@string/pref_sortorder_highestrated</item>
+    </string-array>
+
+</resources>

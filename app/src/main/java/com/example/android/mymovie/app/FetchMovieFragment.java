@@ -1,9 +1,11 @@
 package com.example.android.mymovie.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Movie;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -73,9 +75,11 @@ public class FetchMovieFragment extends Fragment {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-           FetchMovieTask movieTask = new FetchMovieTask();
+
+            updateMovie();
+           /*FetchMovieTask movieTask = new FetchMovieTask();
             movieTask.execute("popularity.desc");
-            return true;
+            return true;*/
         }
 
         return super.onOptionsItemSelected(item);
@@ -124,14 +128,21 @@ public class FetchMovieFragment extends Fragment {
     }
     private void updateMovie() {
         FetchMovieTask movieTask = new FetchMovieTask();
-        movieTask.execute();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortorder = prefs.getString(getString(R.string.pref_sortorder_key),
+                              getString(R.string.pref_sortorder_mostpopular));
+
+        movieTask.execute(sortorder);
+
+      //  movieTask.execute("popularity.desc");
     }
 //start the activity
     @Override
     public void onStart() {
         super.onStart();
-        FetchMovieTask movieTask = new FetchMovieTask();
-        movieTask.execute("popularity.desc");
+        updateMovie();
+        // FetchMovieTask movieTask = new FetchMovieTask();
+       // movieTask.execute("popularity.desc");
 
 
     }
@@ -203,7 +214,7 @@ public class FetchMovieFragment extends Fragment {
 
 
             // If there's no sort order or highest rating there's nothing to look up.  Verify size of params.
-            if (params.length == 0) {
+           if (params.length == 0) {
                 return null;
             }
             HttpURLConnection urlConnection = null;
@@ -230,7 +241,7 @@ public class FetchMovieFragment extends Fragment {
 
                 // Create the request to OpenWeatherMap, and open the connection
                 Uri builtUri = Uri.parse(FETCHMOVIE_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM, params[0])
+                       .appendQueryParameter(QUERY_PARAM, params[0])
                         .appendQueryParameter(API_KEY, apikey). build();
                 URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG, "Built URI " + builtUri.toString());
