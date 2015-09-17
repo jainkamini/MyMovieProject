@@ -220,7 +220,7 @@ public class FetchMovieFragment extends Fragment {
 
                 moviesList.add(movieItem);
               //  MovieData movie2=new MovieData(movies) ;
-                Log.v(LOG_TAG, resultStrs[i].toString());
+             //   Log.v(LOG_TAG, resultStrs[i].toString());
                 //movieList.add(poster);
             }
 
@@ -293,7 +293,7 @@ public class FetchMovieFragment extends Fragment {
                     return null;
                 }
                 fetchtMovieJsonStr = buffer.toString();
-                Log.v(LOG_TAG, "Fetchmovie string: " + fetchtMovieJsonStr);
+             //   Log.v(LOG_TAG, "Fetchmovie string: " + fetchtMovieJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the movie data, there's no point in attemping
