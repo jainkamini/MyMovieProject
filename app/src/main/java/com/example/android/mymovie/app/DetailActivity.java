@@ -1,9 +1,17 @@
 package com.example.android.mymovie.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Movie;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,7 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 public class DetailActivity extends ActionBarActivity {
@@ -67,12 +84,35 @@ public class DetailActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
             Intent intent = getActivity().getIntent();
-            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-                String forecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
-                ((TextView) rootView.findViewById(R.id.detail_text))
-                        .setText(forecastStr);
+            if (intent != null && intent.hasExtra("Title")) {
+
+
+                String mMovieTitle = (String)intent.getStringExtra("Title");
+                ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(mMovieTitle);
+                String mMovieOverview = (String)intent.getStringExtra("Overview");
+                ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(mMovieOverview);
+                String mMovieVoteAverage = (String)intent.getStringExtra("VotAverage");
+                ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage);
+                String mMvieReleaseDate = (String)intent.getStringExtra("ReleaseDate");
+                ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMvieReleaseDate);
+                String mMoviePoster = (String)intent.getStringExtra("ImagePoster");
+                final String FETCHMOVIE_BASE_URL ="http://image.tmdb.org/t/p/w185"+mMoviePoster;
+               // InputStream is = new FileInputStream(path + "/apple.png");
+                Drawable icon = new BitmapDrawable(FETCHMOVIE_BASE_URL);
+              ImageView imageView=(ImageView) rootView.findViewById(R.id.movieposter_image);
+                 Context context=this.getContext();
+                Picasso.with(context).load( "http://image.tmdb.org/t/p/w185"+mMoviePoster).into(imageView);
+
+
             }
+            /*Intent intent = getActivity().getIntent();
+            if (intent != null && intent.hasExtra("movie")) {
+                MovieItem movie = intent.getParcelableExtra("movie");
+                ((TextView) rootView.findViewById(R.id.detail_text))
+                        .setText(movie.getMovieTitle());
+            }*/
             return rootView;
         }
+
     }
 }

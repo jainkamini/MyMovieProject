@@ -2,7 +2,8 @@ package com.example.android.mymovie.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Movie;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -17,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 
 import java.io.BufferedReader;
@@ -38,10 +38,11 @@ import org.json.JSONObject;
  */
 public class FetchMovieFragment extends Fragment {
 
-//Custome Image Adapter
-    ImageAdapternew mMovieAdapter;
-//Movie List
-    public static ArrayList<String> MovieURL = new ArrayList();
+    //Custome Image Adapter
+    ImageAdapter mMovieAdapter;
+    //Movie List
+    //public static ArrayList<String> MovieURL = new ArrayList();
+    public static ArrayList<MovieItem> MovieURL = new ArrayList();
     private GridView mMoviesGrid;
 
 
@@ -57,7 +58,7 @@ public class FetchMovieFragment extends Fragment {
 
 
         // Add this line in order for this fragment to handle menu events.
-       setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 
     }
 
@@ -99,10 +100,10 @@ public class FetchMovieFragment extends Fragment {
                 " http://image.tmdb.org/t/p/w185/sLbXneTErDvS3HIjqRWQJPiZ4Ci.jpg",
                  "http://image.tmdb.org/t/p/w185/s5uMY8ooGRZOL0oe4sIvnlTsYQO.jpg"};*/
 //Initialize movie List
-        final List<String> MovieURL = new ArrayList<String>( );
+       // final List<String> MovieURL = new ArrayList<String>( );
 
 //call the adapter for constructor
-        mMovieAdapter = new ImageAdapternew(this.getActivity(), MovieURL);
+        mMovieAdapter = new ImageAdapter(this.getActivity(), MovieURL);
 
         GridView mMoviesGrid  = (GridView) rootView.findViewById(R.id.movieGrid);
         //Log.v("movieList size is", String.valueOf(movieList.size()));
@@ -113,12 +114,20 @@ public class FetchMovieFragment extends Fragment {
         mMoviesGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
 
-                String item =(String)mMovieAdapter.getItem(position);
-               // String Slecteditem= MovieURL[position];
-              //  Movie movie = (Movie) mMovieAdapter.getItemAtPosition(position);
-                Intent intent = new Intent(getActivity(), DetailActivity.class)
-                .putExtra(Intent.EXTRA_TEXT, item);
+
+                MovieItem movie =(MovieItem) mMovieAdapter.getItem(position);
+
+     //MovieData movie1=new MovieData(movie);
+               // movie1.setMovieTitle(movie.getMovieTitle());
+
+                intent.putExtra("Title",movie.getMovieTitle());
+                intent.putExtra("Overview",movie.getmMovieOverView());
+                intent.putExtra("VotAverage",movie.getmMovieVoteAverage());
+                intent.putExtra("ReleaseDate",movie.getmMovieReleaseDate());
+                intent.putExtra("ImagePoster",movie.getMovieImageurl());
+
                 startActivity(intent);
                 // Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
             }
@@ -130,19 +139,19 @@ public class FetchMovieFragment extends Fragment {
         FetchMovieTask movieTask = new FetchMovieTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortorder = prefs.getString(getString(R.string.pref_sortorder_key),
-                              getString(R.string.pref_sortorder_mostpopular));
+                getString(R.string.pref_sortorder_mostpopular));
 
         movieTask.execute(sortorder);
 
-      //  movieTask.execute("popularity.desc");
+        //  movieTask.execute("popularity.desc");
     }
-//start the activity
+    //start the activity
     @Override
     public void onStart() {
         super.onStart();
         updateMovie();
         // FetchMovieTask movieTask = new FetchMovieTask();
-       // movieTask.execute("popularity.desc");
+        // movieTask.execute("popularity.desc");
 
 
     }
@@ -155,17 +164,17 @@ public class FetchMovieFragment extends Fragment {
 
 
 
-    public class FetchMovieTask extends AsyncTask<String, Void, String[]> {
+    public class FetchMovieTask extends AsyncTask<String, Void, List<MovieItem>> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-         //Take the String representing the complete forecast in JSON Format and
-         // pull out the data we need to construct the Strings needed for the wireframes.
+        //Take the String representing the complete forecast in JSON Format and
+        // pull out the data we need to construct the Strings needed for the wireframes.
 
-         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
-         //into an Object hierarchy for us.
+        // Fortunately parsing is easy:  constructor takes the JSON string and converts it
+        //into an Object hierarchy for us.
 
-        private String[] getMovieDataFromJson(String fetchtMovieJsonStr)
+        private  List<MovieItem> getMovieDataFromJson(String fetchtMovieJsonStr)
                 throws JSONException {
 
             // These are the names of the JSON objects that need to be extracted.
@@ -175,46 +184,58 @@ public class FetchMovieFragment extends Fragment {
             final String TMB_TITLE = "title";
             final String TMB_VOTE_AVG = "vote_average";
             final String TMB_OVERVIW = "overview";
-            final String TMB_RELEASEDATE="relesedate";
+            final String TMB_RELEASEDATE="release_date";
             JSONObject fetchtMovieJson = new JSONObject(fetchtMovieJsonStr);
             JSONArray movieArray = fetchtMovieJson.getJSONArray(TMB_RESULTS);
 
             int numMovies = movieArray.length();
             String[] resultStrs = new String[numMovies];
-
+            List<MovieItem> moviesList = new ArrayList<>();
             for(int i = 0; i < movieArray.length(); i++) {
 
 // don't need some of these yet
                 //String results;
                 String poster;
-                //String title;
-                // String average;
+                String title;
+               // String average;
+
 // Get the JSON object representing the movie
                 JSONObject movieDetail = movieArray.getJSONObject(i);
 
                 poster = movieDetail.getString(TMB_POSTER);
-                //title = movieDetail.getString(TMB_TITLE);
+                title = movieDetail.getString(TMB_TITLE);
                 //average = movieDetail.getString(TMB_VOTE_AVG);
 
                 //only need to return the poster for now
                 //but it doesn't hurt to have the other code already
                 resultStrs[i] = "http://image.tmdb.org/t/p/w185"+poster;
+                MovieItem movieItem = new MovieItem();
+                movieItem.setMovieImageurl(movieDetail.getString(TMB_POSTER));
+                movieItem.setMovieTitle(movieDetail.getString(TMB_TITLE));
+                movieItem.setmMovieOverView(movieDetail.getString(TMB_OVERVIW));
+                movieItem.setmMovieVoteAverage(movieDetail.getString(TMB_VOTE_AVG));
+                movieItem.setmMovieReleaseDate(movieDetail.getString(TMB_RELEASEDATE));
+              //  InputStream input = connection.getInputStream();
+              //  Bitmap myBitmap = BitmapFactory.decodeStream(input);
+
+                moviesList.add(movieItem);
+              //  MovieData movie2=new MovieData(movies) ;
                 Log.v(LOG_TAG, resultStrs[i].toString());
                 //movieList.add(poster);
             }
 
-            return resultStrs;
+            return moviesList;
         }
 
 
         @Override
-        protected String[] doInBackground(String... params) {
+        protected List<MovieItem> doInBackground(String... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
 
 
             // If there's no sort order or highest rating there's nothing to look up.  Verify size of params.
-           if (params.length == 0) {
+            if (params.length == 0) {
                 return null;
             }
             HttpURLConnection urlConnection = null;
@@ -223,7 +244,7 @@ public class FetchMovieFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String fetchtMovieJsonStr = null;
             // String format = "json";
-          //  String apikey = "xxxx";
+            //  String apikey = "xxxx";
             String apikey = "b85cf4603ce5916a993dd400866808bc";
 
 
@@ -241,7 +262,7 @@ public class FetchMovieFragment extends Fragment {
 
                 // Create the request to OpenWeatherMap, and open the connection
                 Uri builtUri = Uri.parse(FETCHMOVIE_BASE_URL).buildUpon()
-                       .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(QUERY_PARAM, params[0])
                         .appendQueryParameter(API_KEY, apikey). build();
                 URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG, "Built URI " + builtUri.toString());
@@ -303,21 +324,21 @@ public class FetchMovieFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String[] result) {
+        protected void onPostExecute(List<MovieItem> MovieList) {
 
-            super.onPostExecute(result);
-           //clear movie list and adapter
-            if (result != null) {
+            super.onPostExecute(MovieList);
+            //clear movie list and adapter
+            if (MovieList != null) {
                 MovieURL.clear();
                 mMovieAdapter.clear();
 
-                for (String resultStrs : result) {
+               // for (String resultStrs : result) {
 
 
 
-                        MovieURL.add(resultStrs);
-                    mMovieAdapter.addAll(resultStrs);
-                    }
+                   // MovieURL.add(resultStrs);
+                    mMovieAdapter.addAll(MovieList);
+              //  }
 
 
                 // New data is back from the server.  Hooray!
@@ -325,5 +346,4 @@ public class FetchMovieFragment extends Fragment {
         }
     }
 }
-
 

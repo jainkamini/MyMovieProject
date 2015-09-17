@@ -1,5 +1,4 @@
-<!--This is old code which is replce below in this replce DetailActivityFragment with DetailActivity$PlaceholderFragment -->
-<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--This is old code which is replce below in this replce DetailActivityFragment with DetailActivity$PlaceholderFragment --><!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -13,14 +12,77 @@
 </RelativeLayout>-->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-android:paddingRight="@dimen/activity_horizontal_margin"
-android:paddingTop="@dimen/activity_vertical_margin"
-android:paddingBottom="@dimen/activity_vertical_margin"
-tools:context="com.example.android.mymovie.app.DetailActivity.DetailFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
 
-<TextView android:text="@string/hello_world" android:id="@+id/detail_text" android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+    tools:context="com.example.android.mymovie.app.DetailActivity.DetailFragment">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/movietitle_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ff25ffc6"
+            android:gravity="left"
+            android:padding="30dp"
+            android:text="@string/hello_world"
+            android:textSize="30sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/movieposter_image"
+                    android:layout_width="match_parent"
+
+                    android:layout_height="wrap_content"
+                   ></ImageView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/movievoteAverage_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="@string/hello_world" />
+
+                <TextView
+                    android:id="@+id/moviereleasedate_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="@string/hello_world" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/movieoverview_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/hello_world" />
+    </LinearLayout>
 
 </RelativeLayout>
