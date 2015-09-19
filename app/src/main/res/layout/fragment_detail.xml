@@ -79,16 +79,7 @@ android:layout_marginLeft="5dp"
                     android:gravity="center"
                     android:textSize="22sp"
                     android:text="@string/hello_world" />
-                <TextView
-                    android:id="@+id/moviereleasemonth_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginLeft="5dp"
 
-                    android:gravity="center"
-
-                    android:text="@string/hello_world" />
 
                 <TextView
                     android:id="@+id/movievoteAverage_text"
@@ -97,8 +88,8 @@ android:layout_marginLeft="5dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:layout_marginLeft="5dp"
-                    android:background="#00A67C"
-                    android:padding="15dp"
+
+
                     android:layout_marginTop="25dp"
 
                     android:layout_gravity="center_horizontal" />

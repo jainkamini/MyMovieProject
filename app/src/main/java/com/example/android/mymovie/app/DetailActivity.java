@@ -96,38 +96,27 @@ public class DetailActivity extends ActionBarActivity {
             }
             if (intent != null && intent.hasExtra("VoteAverage")) {
                 String mMovieVoteAverage = (String) intent.getStringExtra("VoteAverage");
-                ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage);
+                ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage+"/10");
             }
             if (intent != null && intent.hasExtra("ReleaseDate")) {
-                Log.v(LOG_TAG, (String) intent.getStringExtra("ReleaseDate"));
+              //  Log.v(LOG_TAG, (String) intent.getStringExtra("ReleaseDate"));
                 String mMovieReleaseDate = (String) intent.getStringExtra("ReleaseDate");
 
-                if (mMovieReleaseDate != null) {
+
+
                     Log.v(LOG_TAG, (String) mMovieReleaseDate);
 
 
-                    String mMovieMonth = mMovieReleaseDate;
-                    //  Log.v(LOG_TAG, mMovieMonth.toString());
-                    if (mMovieReleaseDate.length() < 4) {
-                        mMovieReleaseDate = "";
-                        mMovieMonth = "";
-                    }
-
-                    if ((mMovieReleaseDate.length()) > 4) {
                         mMovieReleaseDate = mMovieReleaseDate.substring(0, 4);
-                        mMovieMonth = mMovieMonth.substring(5, mMovieMonth.length());
-                        mMovieMonth = mMovieMonth.replace("-", "/") + "/" + mMovieReleaseDate;
-                    }
+
 
                     ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
-                    ((TextView) rootView.findViewById(R.id.moviereleasemonth_text)).setText(mMovieMonth);
-                }
+
+
             }
             if (intent != null && intent.hasExtra("ImagePoster")) {
                 String mMoviePoster = (String)intent.getStringExtra("ImagePoster");
-                final String FETCHMOVIE_BASE_URL ="http://image.tmdb.org/t/p/w185"+mMoviePoster;
-               // InputStream is = new FileInputStream(path + "/apple.png");
-                Drawable icon = new BitmapDrawable(FETCHMOVIE_BASE_URL);
+
               ImageView imageView=(ImageView) rootView.findViewById(R.id.movieposter_image);
                  Context context=this.getContext();
                 imageView.setAdjustViewBounds(true);
