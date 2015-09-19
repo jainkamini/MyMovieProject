@@ -53,7 +53,7 @@ public class ImageAdapter extends ArrayAdapter<MovieItem>
                 // convertView = mInflater.inflate(R.layout.movie_list, null);
                 holder = new ViewHolder();
                 holder.imageView = (ImageView) convertView.findViewById(R.id.movie_image);
-                holder. imageView.setAdjustViewBounds(true);
+                //holder. imageView.setAdjustViewBounds(true);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -65,7 +65,8 @@ public class ImageAdapter extends ArrayAdapter<MovieItem>
 
 
         //  holder. imageView.setImageResource(mThumbIds[position]);
-        Picasso.with(context).load( "http://image.tmdb.org/t/p/w185"+data.getMovieImageurl()).fit().into(holder.imageView);
+      // holder .imageView.setAdjustViewBounds(true);
+        Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + data.getMovieImageurl()).into(holder.imageView);
            // Picasso.with(context).load(imageUrls[position]).fit().into(holder.imageView);
        // Picasso.with(context).load(items[position].tostring).fit().into(holder.imageView);
 

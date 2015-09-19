@@ -40,8 +40,8 @@ public class FetchMovieFragment extends Fragment {
 
     //Custome Image Adapter
     ImageAdapter mMovieAdapter;
-    //Movie List
-    //public static ArrayList<String> MovieURL = new ArrayList();
+
+
     public static ArrayList<MovieItem> MovieURL = new ArrayList();
     private GridView mMoviesGrid;
 
@@ -64,7 +64,7 @@ public class FetchMovieFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fetchmoviefragment, menu);
+       // inflater.inflate(R.menu.fetchmoviefragment, menu);
     }
 
     @Override
@@ -75,13 +75,13 @@ public class FetchMovieFragment extends Fragment {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
+        /*if (id == R.id.action_refresh) {
 
             updateMovie();
-           /*FetchMovieTask movieTask = new FetchMovieTask();
+           *//*FetchMovieTask movieTask = new FetchMovieTask();
             movieTask.execute("popularity.desc");
-            return true;*/
-        }
+            return true;*//*
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -94,13 +94,6 @@ public class FetchMovieFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-       /* String [] movieList= new String[]{"http://i.imgur.com/DvpvklR.png",
-                 "http://image.tmdb.org/t/p/w185/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg"
-         , "http://image.tmdb.org/t/p/w185/kqjL17yufvn9OVLyXYpvtyrFfak.jpg",
-                " http://image.tmdb.org/t/p/w185/sLbXneTErDvS3HIjqRWQJPiZ4Ci.jpg",
-                 "http://image.tmdb.org/t/p/w185/s5uMY8ooGRZOL0oe4sIvnlTsYQO.jpg"};*/
-//Initialize movie List
-       // final List<String> MovieURL = new ArrayList<String>( );
 
 //call the adapter for constructor
         mMovieAdapter = new ImageAdapter(this.getActivity(), MovieURL);
@@ -119,13 +112,15 @@ public class FetchMovieFragment extends Fragment {
 
                 MovieItem movie =(MovieItem) mMovieAdapter.getItem(position);
 
-     //MovieData movie1=new MovieData(movie);
-               // movie1.setMovieTitle(movie.getMovieTitle());
+
 
                 intent.putExtra("Title",movie.getMovieTitle());
                 intent.putExtra("Overview",movie.getmMovieOverView());
-                intent.putExtra("VotAverage",movie.getmMovieVoteAverage());
-                intent.putExtra("ReleaseDate",movie.getmMovieReleaseDate());
+                intent.putExtra("VoteAverage",movie.getmMovieVoteAverage());
+
+
+                    intent.putExtra("ReleaseDate", movie.getmMovieReleaseDate());
+
                 intent.putExtra("ImagePoster",movie.getMovieImageurl());
 
                 startActivity(intent);
@@ -196,19 +191,20 @@ public class FetchMovieFragment extends Fragment {
 // don't need some of these yet
                 //String results;
                 String poster;
-                String title;
+             //   String title;
                // String average;
 
 // Get the JSON object representing the movie
                 JSONObject movieDetail = movieArray.getJSONObject(i);
 
                 poster = movieDetail.getString(TMB_POSTER);
-                title = movieDetail.getString(TMB_TITLE);
+             //   title = movieDetail.getString(TMB_TITLE);
                 //average = movieDetail.getString(TMB_VOTE_AVG);
 
                 //only need to return the poster for now
                 //but it doesn't hurt to have the other code already
-                resultStrs[i] = "http://image.tmdb.org/t/p/w185"+poster;
+               // resultStrs[i] = "http://image.tmdb.org/t/p/w185"+poster;
+                //Set movie item
                 MovieItem movieItem = new MovieItem();
                 movieItem.setMovieImageurl(movieDetail.getString(TMB_POSTER));
                 movieItem.setMovieTitle(movieDetail.getString(TMB_TITLE));
@@ -220,7 +216,7 @@ public class FetchMovieFragment extends Fragment {
 
                 moviesList.add(movieItem);
               //  MovieData movie2=new MovieData(movies) ;
-             //   Log.v(LOG_TAG, resultStrs[i].toString());
+             //  Log.v(LOG_TAG, movieDetail.getString(TMB_RELEASEDATE).toString());
                 //movieList.add(poster);
             }
 
@@ -260,12 +256,12 @@ public class FetchMovieFragment extends Fragment {
 
 
 
-                // Create the request to OpenWeatherMap, and open the connection
+                // Create the request to MovieDetails, and open the connection
                 Uri builtUri = Uri.parse(FETCHMOVIE_BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, params[0])
                         .appendQueryParameter(API_KEY, apikey). build();
                 URL url = new URL(builtUri.toString());
-                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+              //  Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");

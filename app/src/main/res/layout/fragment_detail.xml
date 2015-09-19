@@ -10,13 +10,17 @@
         android:layout_height="wrap_content" />
 
 </RelativeLayout>-->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.mymovie.app.DetailActivity.DetailFragment">
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="com.example.android.mymovie.app.DetailActivity.DetailFragment">
+    tools:context="com.example.android.mymovie.app.DetailActivity.DetailFragment">-->
 
 
     <LinearLayout
@@ -28,7 +32,8 @@
             android:id="@+id/movietitle_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ff25ffc6"
+            android:background="#00A67C"
+            android:fontFamily="sans-serif-light"
             android:gravity="left"
             android:padding="30dp"
             android:text="@string/hello_world"
@@ -49,7 +54,12 @@
                     android:id="@+id/movieposter_image"
                     android:layout_width="match_parent"
 
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+android:scaleType="centerCrop"
+
+                    android:layout_marginTop="8dp"
+android:layout_marginLeft="5dp"
+
                    ></ImageView>
             </LinearLayout>
 
@@ -60,29 +70,51 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/movievoteAverage_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/moviereleasedate_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="5dp"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center"
+                    android:textSize="22sp"
+                    android:text="@string/hello_world" />
+                <TextView
+                    android:id="@+id/moviereleasemonth_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="5dp"
+
                     android:gravity="center"
 
                     android:text="@string/hello_world" />
 
                 <TextView
-                    android:id="@+id/moviereleasedate_text"
+                    android:id="@+id/movievoteAverage_text"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:gravity="center"
-                    android:text="@string/hello_world" />
+                    android:layout_marginLeft="5dp"
+                    android:background="#00A67C"
+                    android:padding="15dp"
+                    android:layout_marginTop="25dp"
+
+                    android:layout_gravity="center_horizontal" />
+
+
             </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:id="@+id/movieoverview_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginTop="16dp"
-            android:text="@string/hello_world" />
+            android:layout_marginLeft="8dp"
+            android:text="@string/Overview" />
+             />
     </LinearLayout>
 
-</RelativeLayout>
+</ScrollView>

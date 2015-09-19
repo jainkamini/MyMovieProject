@@ -82,25 +82,55 @@ public class DetailActivity extends ActionBarActivity {
                                  Bundle savedInstanceState) {
 
             View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
+            String LOG_TAG = DetailActivity.class.getSimpleName();
             Intent intent = getActivity().getIntent();
             if (intent != null && intent.hasExtra("Title")) {
 
 
-                String mMovieTitle = (String)intent.getStringExtra("Title");
+                String mMovieTitle = (String) intent.getStringExtra("Title");
                 ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(mMovieTitle);
-                String mMovieOverview = (String)intent.getStringExtra("Overview");
+            }
+            if (intent != null && intent.hasExtra("Overview")) {
+                String mMovieOverview = (String) intent.getStringExtra("Overview");
                 ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(mMovieOverview);
-                String mMovieVoteAverage = (String)intent.getStringExtra("VotAverage");
+            }
+            if (intent != null && intent.hasExtra("VoteAverage")) {
+                String mMovieVoteAverage = (String) intent.getStringExtra("VoteAverage");
                 ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage);
-                String mMvieReleaseDate = (String)intent.getStringExtra("ReleaseDate");
-                ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMvieReleaseDate);
+            }
+            if (intent != null && intent.hasExtra("ReleaseDate")) {
+                Log.v(LOG_TAG, (String) intent.getStringExtra("ReleaseDate"));
+                String mMovieReleaseDate = (String) intent.getStringExtra("ReleaseDate");
+
+                if (mMovieReleaseDate != null) {
+                    Log.v(LOG_TAG, (String) mMovieReleaseDate);
+
+
+                    String mMovieMonth = mMovieReleaseDate;
+                    //  Log.v(LOG_TAG, mMovieMonth.toString());
+                    if (mMovieReleaseDate.length() < 4) {
+                        mMovieReleaseDate = "";
+                        mMovieMonth = "";
+                    }
+
+                    if ((mMovieReleaseDate.length()) > 4) {
+                        mMovieReleaseDate = mMovieReleaseDate.substring(0, 4);
+                        mMovieMonth = mMovieMonth.substring(5, mMovieMonth.length());
+                        mMovieMonth = mMovieMonth.replace("-", "/") + "/" + mMovieReleaseDate;
+                    }
+
+                    ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
+                    ((TextView) rootView.findViewById(R.id.moviereleasemonth_text)).setText(mMovieMonth);
+                }
+            }
+            if (intent != null && intent.hasExtra("ImagePoster")) {
                 String mMoviePoster = (String)intent.getStringExtra("ImagePoster");
                 final String FETCHMOVIE_BASE_URL ="http://image.tmdb.org/t/p/w185"+mMoviePoster;
                // InputStream is = new FileInputStream(path + "/apple.png");
                 Drawable icon = new BitmapDrawable(FETCHMOVIE_BASE_URL);
               ImageView imageView=(ImageView) rootView.findViewById(R.id.movieposter_image);
                  Context context=this.getContext();
+                imageView.setAdjustViewBounds(true);
                 Picasso.with(context).load( "http://image.tmdb.org/t/p/w185"+mMoviePoster).into(imageView);
 
 
