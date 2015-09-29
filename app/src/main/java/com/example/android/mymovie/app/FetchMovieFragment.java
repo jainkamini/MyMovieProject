@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 
 import java.io.BufferedReader;
@@ -122,7 +123,8 @@ public class FetchMovieFragment extends Fragment {
                     intent.putExtra("ReleaseDate", movie.getmMovieReleaseDate());
 
                 intent.putExtra("ImagePoster",movie.getMovieImageurl());
-
+                intent.putExtra("MovieID", movie.getmMovieId());
+               // Toast.makeText(getActivity(),movie.getmMovieId(), Toast.LENGTH_SHORT).show();
                 startActivity(intent);
                 // Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
             }
@@ -180,6 +182,7 @@ public class FetchMovieFragment extends Fragment {
             final String TMB_VOTE_AVG = "vote_average";
             final String TMB_OVERVIW = "overview";
             final String TMB_RELEASEDATE="release_date";
+            final String TMB_ID="id";
             JSONObject fetchtMovieJson = new JSONObject(fetchtMovieJsonStr);
             JSONArray movieArray = fetchtMovieJson.getJSONArray(TMB_RESULTS);
 
@@ -211,12 +214,14 @@ public class FetchMovieFragment extends Fragment {
                 movieItem.setmMovieOverView(movieDetail.getString(TMB_OVERVIW));
                 movieItem.setmMovieVoteAverage(movieDetail.getString(TMB_VOTE_AVG));
                 movieItem.setmMovieReleaseDate(movieDetail.getString(TMB_RELEASEDATE));
+                movieItem.setmMovieId(movieDetail.getString(TMB_ID));
+
               //  InputStream input = connection.getInputStream();
               //  Bitmap myBitmap = BitmapFactory.decodeStream(input);
-
-                moviesList.add(movieItem);
+              Log.v(LOG_TAG,(movieDetail.getString(TMB_ID).toString()));
+                        moviesList.add(movieItem);
               //  MovieData movie2=new MovieData(movies) ;
-             //  Log.v(LOG_TAG, movieDetail.getString(TMB_RELEASEDATE).toString());
+
                 //movieList.add(poster);
             }
 

@@ -14,6 +14,7 @@ public class MovieItem {
     private String mMovieOverView;
     private String mMovieVoteAverage;
     private String mMovieReleaseDate;
+    private String mMovieId;
 
 
 
@@ -69,5 +70,13 @@ public class MovieItem {
 
     public void setmMovieVoteAverage(String mMovieVoteAverage) {
         this.mMovieVoteAverage = mMovieVoteAverage;
+    }
+
+    public String getmMovieId() {
+        return mMovieId;
+    }
+
+    public void setmMovieId(String mMovieId) {
+        this.mMovieId = mMovieId;
     }
 }
