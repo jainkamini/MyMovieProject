@@ -106,7 +106,22 @@ android:id="@+id/favourite_button"
 
                     android:layout_gravity="center_horizontal"
                     android:text="Favorite"/>
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" android:id="@+id/testtext" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00A67C"
+                    android:gravity="center"
+                    android:layout_marginLeft="5dp"
 
+                    android:id="@+id/test_button"
+
+                    android:layout_marginTop="25dp"
+
+                    android:layout_gravity="center_horizontal"
+                    android:text="Favorite"/>
 
             </LinearLayout>
         </LinearLayout>

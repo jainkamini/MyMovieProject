@@ -3,6 +3,7 @@ package com.example.android.mymovie.app;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Movie;
@@ -28,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.mymovie.app.data.MovieContract;
 import com.example.android.mymovie.app.data.MovieProvider;
@@ -178,12 +180,12 @@ public class DetailActivity extends ActionBarActivity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
                     String movietrailer = mTrailerAdapter.getItem(position);
-                    TextView list_trailer_text=(TextView) rootView.findViewById( R.id.list_trailer_text);
-                  //  String videoId = list_trailer_text.getText().toString();
-                 //   Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:"+videoId));
-                 //   intent.putExtra("VIDEO_ID", videoId);
-                 //   startActivity(intent);*/
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v="+list_trailer_text.getText())));
+                    TextView list_trailer_text = (TextView) rootView.findViewById(R.id.list_trailer_text);
+                    //  String videoId = list_trailer_text.getText().toString();
+                    //   Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:"+videoId));
+                    //   intent.putExtra("VIDEO_ID", videoId);
+                    //   startActivity(intent);*/
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + list_trailer_text.getText())));
                     /*Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .putExtra(Intent.EXTRA_TEXT, forecast);
                     startActivity(intent);*/
@@ -203,10 +205,55 @@ public class DetailActivity extends ActionBarActivity {
                     Uri uri = getContext().getContentResolver().insert(
                             MovieContract.MovieEntry.CONTENT_URI, movieValues);
 
+                    Toast.makeText(getContext(),
+                            uri.toString() + "Inserted ", Toast.LENGTH_LONG).show();
                 }
 
             });
 
+
+            Button testbtn = (Button) rootView.findViewById(R.id.test_button);
+
+            testbtn.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+
+                    String URL = "content://com.example.android.mymovie.app/movie";
+                    Uri friends = Uri.parse(URL);
+
+                    Cursor c = getContext().getContentResolver().query(friends, null, null, null, "movie_id");
+
+
+
+
+                    String result = "Javacodegeeks Results:";
+
+                    if (!c.moveToFirst()) {
+
+                        Toast.makeText(getContext(), result+" no content yet!", Toast.LENGTH_LONG).show();
+
+                    }else{
+
+                        do{
+
+                            result = result + "\n" + c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)) ;
+
+
+
+                        } while (c.moveToNext());
+
+                        Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
+
+                    }
+
+
+
+
+
+                }
+
+            });
             return rootView;
         }
 
