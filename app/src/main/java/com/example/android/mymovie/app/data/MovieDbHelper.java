@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.example.android.mymovie.app.data.MovieContract.MovieEntry;
+import com.example.android.mymovie.app.data.MovieContract.TrailerEntry;
+import com.example.android.mymovie.app.data.MovieContract.ReviewEntry;
 /**
  * Manages a local database for movie data.
  */
@@ -18,9 +20,57 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
                 MovieEntry._ID + " INTEGER PRIMARY KEY," +
-                MovieEntry.COLUMN_MOVIE_ID +" INTEGER NOT NULL " +
+                MovieEntry.COLUMN_MOVIE_ID +" INTEGER NOT NULL , " +
+                MovieEntry.COLUMN_MOVIE_DATE +" TEXT  , " +
+                MovieEntry.COLUMN_MOVIE_POSTER +" TEXT NOT NULL , " +
+                MovieEntry.COLUMN_MOVIE_OVERVIEW +" TEXT NOT NULL , " +
+                MovieEntry.COLUMN_MOVIE_RATING +" TEXT NOT NULL , " +
+                MovieEntry.COLUMN_MOVIE_TITLE +" TEXT NOT NULL  " +
+
+
         " );";
+
+        final String SQL_CREATE_TRAILER_TABLE = "CREATE TABLE " + TrailerEntry.TABLE_NAME + " (" +
+                // Why AutoIncrement here, and not above?
+                // Unique keys will be auto-generated in either case.  But for weather
+                // forecasting, it's reasonable to assume the user will want information
+                // for a certain date and all dates *following*, so the forecast data
+                // should be sorted accordingly.
+                TrailerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+
+                // the ID of the location entry associated with this weather data
+                TrailerEntry.COLUMN_MOVIEID_KEY + " INTEGER NOT NULL, " +
+                TrailerEntry.COLUMN_MOVIE_KEY + " TEXT NOT NULL, " +
+
+
+
+
+                // Set up the location column as a foreign key to location table.
+                " FOREIGN KEY (" + TrailerEntry.COLUMN_MOVIEID_KEY+ ") REFERENCES " +
+                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ") " +
+
+               ");";
+
+        final String SQL_CREATE_REVIEW_TABLE = "CREATE TABLE " + ReviewEntry.TABLE_NAME + " (" +
+                // Why AutoIncrement here, and not above?
+                // Unique keys will be auto-generated in either case.  But for weather
+                // forecasting, it's reasonable to assume the user will want information
+                // for a certain date and all dates *following*, so the forecast data
+                // should be sorted accordingly.
+                ReviewEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+
+                // the ID of the location entry associated with this weather data
+                ReviewEntry.COLUMN_MOVIEID_KEY + " INTEGER NOT NULL, " +
+                ReviewEntry.COLUMN_MOVIE_AUTHOR + " TEXT NOT NULL, " +
+                ReviewEntry.COLUMN_MOVIE_CONTENT + " TEXT NOT NULL, " +
+                // Set up the location column as a foreign key to location table.
+                " FOREIGN KEY (" + TrailerEntry.COLUMN_MOVIEID_KEY+ ") REFERENCES " +
+                MovieEntry.TABLE_NAME + " (" + MovieEntry._ID + ") " +
+
+                ");";
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_TRAILER_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_REVIEW_TABLE);
 
     }
     @Override
@@ -32,7 +82,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         // If you want to update the schema without wiping data, commenting out the next 2 lines
         // should be your top priority before modifying this method.
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WeatherEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TrailerEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ReviewEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 

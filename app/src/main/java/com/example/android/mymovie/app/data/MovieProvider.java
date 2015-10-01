@@ -22,13 +22,15 @@ public class MovieProvider extends ContentProvider {
 
     static final int MOVIE = 100;
     static final int MOVIE_ID = 101;
+    static final int TRAILAR = 102;
+    static final int REVIEW = 103;
 
 
     /*
        Students: Here is where you need to create the UriMatcher. This UriMatcher will
        match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE,
        and LOCATION integer constants defined above.  You can test this by uncommenting the
-       testUriMatcher test within TestUriMatcher.
+       testUriMatcher testgg within TestUriMatcher.
     */
     static UriMatcher buildUriMatcher() {
         // I know what you're thinking.  Why create a UriMatcher when you can use regular
@@ -46,6 +48,8 @@ public class MovieProvider extends ContentProvider {
         matcher.addURI(authority,  MovieContract.PATH_MOVIE + "/*/#", MOVIE_ID );
 
         matcher.addURI(authority,  MovieContract.PATH_MOVIE, MOVIE);
+        matcher.addURI(authority,  MovieContract.PATH_TRAILER, TRAILAR);
+        matcher.addURI(authority,  MovieContract.PATH_REVIEW, REVIEW);
         return matcher;
     }
 
@@ -68,6 +72,10 @@ public class MovieProvider extends ContentProvider {
                 return MovieContract.MovieEntry.CONTENT_ITEM_TYPE;
             case MOVIE_ID :
                 return MovieContract.MovieEntry.CONTENT_ITEM_TYPE;
+            case TRAILAR :
+                return MovieContract.TrailerEntry.CONTENT_ITEM_TYPE;
+            case REVIEW :
+                return MovieContract.ReviewEntry.CONTENT_ITEM_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -80,20 +88,38 @@ public class MovieProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         Uri returnUri;
 
-
+        switch (match) {
+            case MOVIE: {
 
                 long _id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
                     returnUri = MovieContract.MovieEntry.buildMovieUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
-
-
-
-               // throw new UnsupportedOperationException("Unknown uri: " + uri);
-
+                break;
+            }
+            case TRAILAR: {
+                long _id = db.insert(MovieContract.TrailerEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = MovieContract.TrailerEntry.buildTrailerUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case REVIEW: {
+                long _id = db.insert(MovieContract.ReviewEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = MovieContract.ReviewEntry.buildReviewUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
         getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
+
     }
 
     @Override
@@ -101,12 +127,25 @@ public class MovieProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
+        // this makes deletegg all rows return the number of rows deleted
         // this makes delete all rows return the number of rows deleted
         if ( null == selection ) selection = "1";
-
+        switch (match) {
+            case MOVIE:
                 rowsDeleted = db.delete(
                         MovieContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
-
+                break;
+            case TRAILAR:
+                rowsDeleted = db.delete(
+                        MovieContract.TrailerEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case REVIEW:
+                rowsDeleted = db.delete(
+                        MovieContract.ReviewEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
         // Because a null deletes all rows
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
@@ -122,10 +161,23 @@ public class MovieProvider extends ContentProvider {
         int rowsUpdated;
 
 
+        switch (match) {
+            case MOVIE:
+
                 rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, values, selection,
                         selectionArgs);
-
-
+                break;
+            case TRAILAR:
+                rowsUpdated = db.update(MovieContract.TrailerEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case REVIEW:
+                rowsUpdated = db.update(MovieContract.ReviewEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
         if (rowsUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
@@ -169,6 +221,37 @@ public class MovieProvider extends ContentProvider {
                         sortOrder);
 
                 break;
+
+
+            }
+            case TRAILAR: {
+                // moviequeryBuilder.appendWhere(MovieContract.MovieEntry._ID + "=" + uri.getPathSegments().get(1));
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.TrailerEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+
+                break;
+
+
+            }
+            case REVIEW: {
+                // moviequeryBuilder.appendWhere(MovieContract.MovieEntry._ID + "=" + uri.getPathSegments().get(1));
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.ReviewEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+
+                break;
+
 
             }
             default:

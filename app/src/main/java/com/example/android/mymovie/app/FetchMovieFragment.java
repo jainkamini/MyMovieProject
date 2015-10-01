@@ -37,6 +37,8 @@ import org.json.JSONObject;
 /**
  * A placeholder fragment containing a simple view.
  */
+
+//http://inthecheesefactory.com/blog/retrofit-2.0/en
 public class FetchMovieFragment extends Fragment {
 
     //Custome Image Adapter
@@ -137,7 +139,6 @@ public class FetchMovieFragment extends Fragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortorder = prefs.getString(getString(R.string.pref_sortorder_key),
                 getString(R.string.pref_sortorder_mostpopular));
-
         movieTask.execute(sortorder);
 
         //  movieTask.execute("popularity.desc");
@@ -337,7 +338,7 @@ public class FetchMovieFragment extends Fragment {
 
 
 
-                   // MovieURL.add(resultStrs);
+                   // MovieURL.addAll(MovieList);
                     mMovieAdapter.addAll(MovieList);
               //  }
 

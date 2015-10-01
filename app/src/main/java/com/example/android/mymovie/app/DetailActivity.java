@@ -1,5 +1,6 @@
 package com.example.android.mymovie.app;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -55,9 +56,16 @@ public class DetailActivity extends ActionBarActivity {
     public static String mMovieId;
     private static ArrayAdapter<String> mTrailerAdapter;
     private static ArrayAdapter<String> mReviewAdapter;
+    public static  String mMovieTitle;
+    public static  String mMovieOverview;
+    public static  String mMovieVoteAverage;
+    public static   String mMovieReleaseDate;
+    public static  String mMoviePoster;
+    public static String[] MovieTrailer ;
+    public static String[] MovieReview ;
 
-    public static ArrayList<String> MovieTrailer = new ArrayList();
-    public static ArrayList<String> MovieReview = new ArrayList();
+   // public static ArrayList<String> MovieTrailer = new ArrayList();
+  //  public static ArrayList<String> MovieReview = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,18 +118,20 @@ public class DetailActivity extends ActionBarActivity {
             final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
             String LOG_TAG = DetailActivity.class.getSimpleName();
             Intent intent = getActivity().getIntent();
+
+
             if (intent != null && intent.hasExtra("Title")) {
 
 
-                String mMovieTitle = (String) intent.getStringExtra("Title");
+                mMovieTitle = (String) intent.getStringExtra("Title");
                 ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(mMovieTitle);
             }
             if (intent != null && intent.hasExtra("Overview")) {
-                String mMovieOverview = (String) intent.getStringExtra("Overview");
+                mMovieOverview = (String) intent.getStringExtra("Overview");
                 ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(mMovieOverview);
             }
             if (intent != null && intent.hasExtra("VoteAverage")) {
-                String mMovieVoteAverage = (String) intent.getStringExtra("VoteAverage");
+                 mMovieVoteAverage = (String) intent.getStringExtra("VoteAverage");
                 ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage+"/10");
             }
             if (intent != null && intent.hasExtra("MovieID")) {
@@ -132,7 +142,7 @@ public class DetailActivity extends ActionBarActivity {
 
             if (intent != null && intent.hasExtra("ReleaseDate")) {
               //  Log.v(LOG_TAG, (String) intent.getStringExtra("ReleaseDate"));
-                String mMovieReleaseDate = (String) intent.getStringExtra("ReleaseDate");
+                 mMovieReleaseDate = (String) intent.getStringExtra("ReleaseDate");
 
 
 
@@ -147,7 +157,7 @@ public class DetailActivity extends ActionBarActivity {
 
             }
             if (intent != null && intent.hasExtra("ImagePoster")) {
-                String mMoviePoster = (String)intent.getStringExtra("ImagePoster");
+                 mMoviePoster = (String)intent.getStringExtra("ImagePoster");
 
               ImageView imageView=(ImageView) rootView.findViewById(R.id.movieposter_image);
                  Context context=this.getContext();
@@ -156,6 +166,13 @@ public class DetailActivity extends ActionBarActivity {
 
 
             }
+
+            ListView listView = (ListView) rootView.findViewById(R.id.listview_trailer);
+          //  View headerView = ((LayoutInflater)Activity.this.getSystemService(Activity.this.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.header, null, false);
+           // listView.addHeaderView(headerView)
+          //  ViewGroup header = (ViewGroup)inflater.inflate(R.layout.trailer_header,listView, false);
+
+           // listView.addHeaderView(header);
            // FetchTrailerTask TrailerTask= new FetchTrailerTask();
            // TrailerTask.execute(mMovieId);
             mTrailerAdapter =
@@ -164,7 +181,9 @@ public class DetailActivity extends ActionBarActivity {
                             R.layout.trailer_list, // The name of the layout ID.
                             R.id.list_trailer_text, // The ID of the textview to populate.
                             new ArrayList<String>());
-            ListView listView = (ListView) rootView.findViewById(R.id.listview_trailer);
+
+
+
             listView.setAdapter(mTrailerAdapter);
             mReviewAdapter =
                     new ArrayAdapter<String>(
@@ -202,8 +221,49 @@ public class DetailActivity extends ActionBarActivity {
                     ContentValues movieValues = new ContentValues();
                     movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
                             mMovieId);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
+                            mMoviePoster);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
+                            mMovieVoteAverage);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DATE,
+                            mMovieReleaseDate);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
+                            mMovieOverview);
+                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+                            mMovieTitle);
+
                     Uri uri = getContext().getContentResolver().insert(
                             MovieContract.MovieEntry.CONTENT_URI, movieValues);
+                    int i;
+
+                    for (i=0 ;i<MovieTrailer.length;i++)
+                    {
+                        ContentValues TrailerValues = new ContentValues();
+                        TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY,
+                                mMovieId);
+                        TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY,
+                                MovieTrailer[i]);
+
+                        Uri uri1 = getContext().getContentResolver().insert(
+                                MovieContract.TrailerEntry.CONTENT_URI, TrailerValues);
+
+                    }
+
+                    for (i=0 ;i<MovieReview.length;i++)
+                    {
+                        ContentValues ReviewValues = new ContentValues();
+                        ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
+                                mMovieId);
+                        ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
+                                MovieReview[i]);
+                        ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
+                                MovieReview[i]);
+                        Uri uri2 = getContext().getContentResolver().insert(
+                                MovieContract.ReviewEntry.CONTENT_URI, ReviewValues);
+
+                    }
+
+
 
                     Toast.makeText(getContext(),
                             uri.toString() + "Inserted ", Toast.LENGTH_LONG).show();
@@ -220,14 +280,20 @@ public class DetailActivity extends ActionBarActivity {
                 public void onClick(View arg0) {
 
                     String URL = "content://com.example.android.mymovie.app/movie";
+                    String URL1 = "content://com.example.android.mymovie.app/trailer";
+
                     Uri friends = Uri.parse(URL);
 
+                    Uri trailer = Uri.parse(URL1);
+
                     Cursor c = getContext().getContentResolver().query(friends, null, null, null, "movie_id");
+                    Cursor c1 = getContext().getContentResolver().query(trailer, null, null, null, "movie_id");
 
 
 
 
                     String result = "Javacodegeeks Results:";
+                    String result1 = "Javacodegeeks Results:";
 
                     if (!c.moveToFirst()) {
 
@@ -237,13 +303,32 @@ public class DetailActivity extends ActionBarActivity {
 
                         do{
 
-                            result = result + "\n" + c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)) ;
+                            result = result + "\n" + c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID))+","+
+                                    c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER))      ;
 
 
 
                         } while (c.moveToNext());
 
-                        Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
+                     //   Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
+
+                    }
+                    if (!c1.moveToFirst()) {
+
+                        Toast.makeText(getContext(), result1+" no content yet!", Toast.LENGTH_LONG).show();
+
+                    }else{
+
+                        do{
+
+                            result1 = result1 + "\n" + c1.getString(c.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY))+","+
+                                    c1.getString(c1.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY))      ;
+
+
+
+                        } while (c1.moveToNext());
+
+                        Toast.makeText(getContext(),result +"--"+ result1, Toast.LENGTH_LONG).show();
 
                     }
 
@@ -412,9 +497,12 @@ public class DetailActivity extends ActionBarActivity {
 
             protected void onPostExecute(String[] result) {
                 if (result != null && mTrailerAdapter != null) {
+
                     mTrailerAdapter.clear();
-                    for (String dayForecastStr : result) {
-                        mTrailerAdapter.add(dayForecastStr);
+                    MovieTrailer  =result;
+                    for (String TrailerStr : result) {
+                        mTrailerAdapter.add(TrailerStr);
+
                     }
                     // New data is back from the server.  Hooray!
                 }
@@ -565,6 +653,7 @@ public class DetailActivity extends ActionBarActivity {
             protected void onPostExecute(String[] result) {
                 if (result != null && mReviewAdapter != null) {
                     mReviewAdapter.clear();
+                    MovieReview=result;
                     for (String dayForecastStr : result) {
                         mReviewAdapter.add(dayForecastStr);
                     }
