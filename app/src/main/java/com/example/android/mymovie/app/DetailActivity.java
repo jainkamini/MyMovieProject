@@ -63,6 +63,7 @@ public class DetailActivity extends ActionBarActivity {
     public static  String mMoviePoster;
     public static String[] MovieTrailer ;
     public static String[] MovieReview ;
+    public static String preffaram;
 
    // public static ArrayList<String> MovieTrailer = new ArrayList();
   //  public static ArrayList<String> MovieReview = new ArrayList();
@@ -132,12 +133,12 @@ public class DetailActivity extends ActionBarActivity {
             }
             if (intent != null && intent.hasExtra("VoteAverage")) {
                  mMovieVoteAverage = (String) intent.getStringExtra("VoteAverage");
-                ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage+"/10");
+                ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage + "/10");
             }
             if (intent != null && intent.hasExtra("MovieID")) {
                 mMovieId =(String) intent.getStringExtra("MovieID");
                // mMovieId=(int)mMovieIds;
-                Log.v(LOG_TAG,  mMovieId);
+                Log.v(LOG_TAG, mMovieId);
             }
 
             if (intent != null && intent.hasExtra("ReleaseDate")) {
@@ -155,6 +156,10 @@ public class DetailActivity extends ActionBarActivity {
                     ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
 
 
+            }
+            if (intent != null && intent.hasExtra("PrefParm"))
+            {
+                preffaram=(String)intent.getStringExtra("PrefParm");
             }
             if (intent != null && intent.hasExtra("ImagePoster")) {
                  mMoviePoster = (String)intent.getStringExtra("ImagePoster");

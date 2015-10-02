@@ -11,7 +11,7 @@
     <string-array name="pref_sortorder_values">
         <item>@string/pref_sortorder_mostpopular</item>
         <item>@string/pref_sortorder_highestrated</item>
-        <item>@string/pref_sortorder_label_favorites</item>
+        <item>@string/pref_sortorder_favorites</item>
     </string-array>
 
 </resources>
