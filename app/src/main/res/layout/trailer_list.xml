@@ -1,26 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/list_trailer_image"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-android:background="@drawable/playimage"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-
-        >
-    </ImageView>
 -->
-    <TextView
-        android:id="@+id/list_trailer_text"
-        android:layout_alignRight="@+id/list_trailer_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="8dp"
-        android:text="Trailar Not" />
-    />
-</RelativeLayout>
+
+
+<TextView
+    android:id="@+id/list_trailer_text"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
+
+<!--
+</RelativeLayout>-->

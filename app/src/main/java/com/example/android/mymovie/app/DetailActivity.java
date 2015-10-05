@@ -49,6 +49,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 
 public class DetailActivity extends ActionBarActivity {
@@ -118,6 +119,7 @@ public class DetailActivity extends ActionBarActivity {
 
             final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
             String LOG_TAG = DetailActivity.class.getSimpleName();
+
             Intent intent = getActivity().getIntent();
 
 
@@ -172,7 +174,7 @@ public class DetailActivity extends ActionBarActivity {
 
             }
 
-            ListView listView = (ListView) rootView.findViewById(R.id.listview_trailer);
+
           //  View headerView = ((LayoutInflater)Activity.this.getSystemService(Activity.this.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.header, null, false);
            // listView.addHeaderView(headerView)
           //  ViewGroup header = (ViewGroup)inflater.inflate(R.layout.trailer_header,listView, false);
@@ -187,9 +189,10 @@ public class DetailActivity extends ActionBarActivity {
                             R.id.list_trailer_text, // The ID of the textview to populate.
                             new ArrayList<String>());
 
-
-
+            ListView listView = (ListView) rootView.findViewById(R.id.listview_trailer);
             listView.setAdapter(mTrailerAdapter);
+
+
             mReviewAdapter =
                     new ArrayAdapter<String>(
                             getActivity(), // The current context (this activity)
@@ -222,59 +225,135 @@ public class DetailActivity extends ActionBarActivity {
 
                 @Override
                 public void onClick(View arg0) {
+ //if (checkFavorite("Movie")==false)  {
+                    Cursor cursor = getContext().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, null,
+                            MovieContract.MovieEntry.COLUMN_MOVIE_ID+"="+mMovieId,
+                            null,null);
+                    if (cursor.getCount()==0 ) {
+                        ContentValues movieValues = new ContentValues();
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                                mMovieId);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
+                                mMoviePoster);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
+                                mMovieVoteAverage);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DATE,
+                                mMovieReleaseDate);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
+                                mMovieOverview);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+                                mMovieTitle);
 
-                    ContentValues movieValues = new ContentValues();
-                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-                            mMovieId);
-                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
-                            mMoviePoster);
-                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
-                            mMovieVoteAverage);
-                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DATE,
-                            mMovieReleaseDate);
-                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
-                            mMovieOverview);
-                    movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
-                            mMovieTitle);
+                        Uri uri = getContext().getContentResolver().insert(
+                                MovieContract.MovieEntry.CONTENT_URI, movieValues);
 
-                    Uri uri = getContext().getContentResolver().insert(
-                            MovieContract.MovieEntry.CONTENT_URI, movieValues);
+                    }
+                    else
+                    {
+
+                        ContentValues movieValues = new ContentValues();
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                                mMovieId);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
+                                mMoviePoster);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
+                                mMovieVoteAverage);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DATE,
+                                mMovieReleaseDate);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
+                                mMovieOverview);
+                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+                                mMovieTitle);
+
+                        int  uri = getContext().getContentResolver().update(
+                                MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovieId,null);
+
+                    }
+//} int i;
+
                     int i;
 
-                    for (i=0 ;i<MovieTrailer.length;i++)
-                    {
-                        ContentValues TrailerValues = new ContentValues();
-                        TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY,
-                                mMovieId);
-                        TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY,
-                                MovieTrailer[i]);
 
-                        Uri uri1 = getContext().getContentResolver().insert(
-                                MovieContract.TrailerEntry.CONTENT_URI, TrailerValues);
 
+                        //     if (checkFavorite("Trailer")==false) {
+                    if (MovieTrailer != null) {
+                        for (i = 0; i < MovieTrailer.length; i++) {
+                            Cursor cursorTrailer = getContext().getContentResolver().query(MovieContract.TrailerEntry.CONTENT_URI, null,
+                                    MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "="+" ' " + MovieTrailer[i]+ "' " ,
+                                    null, null);
+                            if (cursorTrailer.getCount() == 0) {
+                                ContentValues TrailerValues = new ContentValues();
+                                TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY,
+                                        mMovieId);
+                                TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY,
+                                        MovieTrailer[i]);
+
+                                Uri uri1 = getContext().getContentResolver().insert(
+                                        MovieContract.TrailerEntry.CONTENT_URI, TrailerValues);
+                            } else {
+
+                                ContentValues TrailerValues = new ContentValues();
+                                TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY,
+                                        mMovieId);
+                                TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY,
+                                        MovieTrailer[i]);
+
+                                int uri1 = getContext().getContentResolver().update(
+                                        MovieContract.TrailerEntry.CONTENT_URI, TrailerValues, MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "="+" ' " + MovieTrailer[i]+ "' ", null);
+                            }
+
+                            // }
+
+                            //         }}
+                        }
                     }
+        //            if (checkFavorite("Review")==false) {
 
-                    for (i=0 ;i<MovieReview.length;i++)
-                    {
-                        ContentValues ReviewValues = new ContentValues();
-                        ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
-                                mMovieId);
-                        ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
-                                MovieReview[i]);
-                        ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
-                                MovieReview[i]);
-                        Uri uri2 = getContext().getContentResolver().insert(
-                                MovieContract.ReviewEntry.CONTENT_URI, ReviewValues);
+if (MovieReview != null) {
+    for (i = 0; i < MovieReview.length; i++) {
+        Cursor cursorReview = getContext().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI, null,
+                MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT + "=" + " ' " + MovieReview[i]+ "' ",
+                null, null);
+        if (cursorReview.getCount() == 0) {
+            ContentValues ReviewValues = new ContentValues();
+            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
+                    mMovieId);
+            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
+                    MovieReview[i]);
+            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
+                    MovieReview[i]);
+            //   if (checkFavorite("Review")==false) {
+            Uri uri2 = getContext().getContentResolver().insert(
+                    MovieContract.ReviewEntry.CONTENT_URI, ReviewValues);
+            //  }
+        } else {
 
-                    }
+            ContentValues ReviewValues = new ContentValues();
+            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
+                    mMovieId);
+            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
+                    MovieReview[i]);
+            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
+                    MovieReview[i]);
+            //   if (checkFavorite("Review")==false) {
+            int uri1 = getContext().getContentResolver().update(
+                    MovieContract.TrailerEntry.CONTENT_URI, ReviewValues, MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT + "=" + " ' " + MovieReview[i]+ "' ", null);
+
+        }
+
+    }
+}
+               //  }   }
 
 
 
                     Toast.makeText(getContext(),
-                            uri.toString() + "Inserted ", Toast.LENGTH_LONG).show();
+                            " Favorite Added ", Toast.LENGTH_LONG).show();
                 }
 
             });
+
+
 
 
             Button testbtn = (Button) rootView.findViewById(R.id.test_button);
@@ -404,6 +483,38 @@ public class DetailActivity extends ActionBarActivity {
                 return resultStrs;
             }
 
+            private  String[] getMovieTrailerFromDB()
+                    throws DataFormatException {
+
+
+
+                int i=0;
+                Cursor cursor = getContext().getContentResolver().query(MovieContract.TrailerEntry.CONTENT_URI,null,MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY+"="+ mMovieId,null,null,null);
+                String[] resultStrs = new String[cursor.getCount()];
+                if (!cursor.moveToFirst()) {
+                    Log.v(LOG_TAG, "Favorite no found yet!");
+                    // Toast.makeText(getContext(), "Favorite no found yet!", Toast.LENGTH_LONG).show();
+
+                } else {
+
+                    do {
+
+
+                        resultStrs[i++]   =(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
+
+
+
+
+
+                    } while (cursor.moveToNext());
+
+                    //   Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
+
+                }
+
+                return resultStrs;
+
+            }
 
             @Override
             protected  String[] doInBackground(String... params) {
@@ -415,88 +526,103 @@ public class DetailActivity extends ActionBarActivity {
                 if (params.length == 0) {
                     return null;
                 }
-                HttpURLConnection urlConnection = null;
-                BufferedReader reader = null;
 
-                // Will contain the raw JSON response as a string.
-                String fetchtMovieJsonStr = null;
-                // String format = "json";
-                //  String apikey = "xxxx";
-                String apikey = "b85cf4603ce5916a993dd400866808bc";
+                if ("favorites".equals(preffaram)) {
 
-
-                try {
-                    // Construct the URL for the Fetchmovie query
-                    // Possible parameters are avaiable at OWM's Fetchmovie API page, at
-                    // http://openweathermap.org/API#forecast
-
-                    final String FETCHMOVIE_BASE_URL = " http://api.themoviedb.org/3/movie/" + mMovieId + "/videos?";
-                    final String QUERY_PARAM = "sort_by";
-                    final String API_KEY = "api_key";
-                    //
-
-
-                    // Create the request to MovieDetails, and open the connection
-                    Uri builtUri = Uri.parse(FETCHMOVIE_BASE_URL).buildUpon()
-                            //  .appendQueryParameter(QUERY_PARAM, params[0])
-                            .appendQueryParameter(API_KEY, apikey).build();
-                    URL url = new URL(builtUri.toString());
-                     Log.v(LOG_TAG, "Built URI " + builtUri.toString());
-
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.connect();
-
-                    // Read the input stream into a String
-                    InputStream inputStream = urlConnection.getInputStream();
-                    StringBuffer buffer = new StringBuffer();
-                    if (inputStream == null) {
-                        // Nothing to do.
-                        return null;
-                    }
-                    reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                        // But it does make debugging a *lot* easier if you print out the completed
-                        // buffer for debugging.
-                        buffer.append(line + "\n");
+                    Log.v(LOG_TAG, preffaram);
+                    try {
+                        return getMovieTrailerFromDB();
+                    } catch (DataFormatException e) {
+                        Log.e(LOG_TAG, e.getMessage(), e);
+                        e.printStackTrace();
                     }
 
-                    if (buffer.length() == 0) {
-                        // Stream was empty.  No point in parsing.
-                        return null;
-                    }
-                    fetchtMovieJsonStr = buffer.toString();
-                    //   Log.v(LOG_TAG, "Fetchmovie string: " + fetchtMovieJsonStr);
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "Error ", e);
-                    // If the code didn't successfully get the movie data, there's no point in attemping
-                    // to parse it.
+                    return null;
+                }
+                else {
+                    HttpURLConnection urlConnection = null;
+                    BufferedReader reader = null;
+
+                    // Will contain the raw JSON response as a string.
+                    String fetchtMovieJsonStr = null;
+                    // String format = "json";
+                    //  String apikey = "xxxx";
+                    String apikey = "b85cf4603ce5916a993dd400866808bc";
 
 
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (final IOException e) {
-                            Log.e(LOG_TAG, "Error closing stream", e);
+                    try {
+                        // Construct the URL for the Fetchmovie query
+                        // Possible parameters are avaiable at OWM's Fetchmovie API page, at
+                        // http://openweathermap.org/API#forecast
+
+                        final String FETCHMOVIE_BASE_URL = " http://api.themoviedb.org/3/movie/" + mMovieId + "/videos?";
+                        final String QUERY_PARAM = "sort_by";
+                        final String API_KEY = "api_key";
+                        //
+
+
+                        // Create the request to MovieDetails, and open the connection
+                        Uri builtUri = Uri.parse(FETCHMOVIE_BASE_URL).buildUpon()
+                                //  .appendQueryParameter(QUERY_PARAM, params[0])
+                                .appendQueryParameter(API_KEY, apikey).build();
+                        URL url = new URL(builtUri.toString());
+                        Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+
+                        urlConnection = (HttpURLConnection) url.openConnection();
+                        urlConnection.setRequestMethod("GET");
+                        urlConnection.connect();
+
+                        // Read the input stream into a String
+                        InputStream inputStream = urlConnection.getInputStream();
+                        StringBuffer buffer = new StringBuffer();
+                        if (inputStream == null) {
+                            // Nothing to do.
+                            return null;
+                        }
+                        reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                            // But it does make debugging a *lot* easier if you print out the completed
+                            // buffer for debugging.
+                            buffer.append(line + "\n");
+                        }
+
+                        if (buffer.length() == 0) {
+                            // Stream was empty.  No point in parsing.
+                            return null;
+                        }
+                        fetchtMovieJsonStr = buffer.toString();
+                        //   Log.v(LOG_TAG, "Fetchmovie string: " + fetchtMovieJsonStr);
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, "Error ", e);
+                        // If the code didn't successfully get the movie data, there's no point in attemping
+                        // to parse it.
+
+
+                    } finally {
+                        if (urlConnection != null) {
+                            urlConnection.disconnect();
+                        }
+                        if (reader != null) {
+                            try {
+                                reader.close();
+                            } catch (final IOException e) {
+                                Log.e(LOG_TAG, "Error closing stream", e);
+                            }
                         }
                     }
-                }
-                try {
-                    return getMovieDataFromJson(fetchtMovieJsonStr);
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
-                    e.printStackTrace();
-                }
+                    try {
+                        return getMovieDataFromJson(fetchtMovieJsonStr);
+                    } catch (JSONException e) {
+                        Log.e(LOG_TAG, e.getMessage(), e);
+                        e.printStackTrace();
+                    }
 
-                // This will only happen if there was an error getting or parsing the forecast.
-                return null;
+                    // This will only happen if there was an error getting or parsing the forecast.
+                    return null;
+                }
             }
 
 
@@ -506,6 +632,7 @@ public class DetailActivity extends ActionBarActivity {
                     mTrailerAdapter.clear();
                     MovieTrailer  =result;
                     for (String TrailerStr : result) {
+                    //    Log.v(LOG_TAG, "Movie Trailer: " + TrailerStr);
                         mTrailerAdapter.add(TrailerStr);
 
                     }
@@ -559,7 +686,38 @@ public class DetailActivity extends ActionBarActivity {
                 return resultStrs;
             }
 
+            private  String[] getMovieReviewFromDB()
+                    throws DataFormatException {
 
+
+
+                int i=0;
+                Cursor cursor = getContext().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI,null,MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY+"="+ mMovieId,null,null,null);
+                String[] resultStrs = new String[cursor.getCount()];
+                if (!cursor.moveToFirst()) {
+                    Log.v(LOG_TAG, "Favorite no found yet!");
+                    // Toast.makeText(getContext(), "Favorite no found yet!", Toast.LENGTH_LONG).show();
+
+                } else {
+
+                    do {
+
+
+                        resultStrs[i++]   =(cursor.getString(cursor.getColumnIndex(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT)));
+
+
+
+
+
+                    } while (cursor.moveToNext());
+
+                    //   Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
+
+                }
+
+                return resultStrs;
+
+            }
             @Override
             protected  String[] doInBackground(String... params) {
                 // These two need to be declared outside the try/catch
@@ -570,90 +728,102 @@ public class DetailActivity extends ActionBarActivity {
                 if (params.length == 0) {
                     return null;
                 }
-                HttpURLConnection urlConnection = null;
-                BufferedReader reader = null;
+                if ("favorites".equals(preffaram)) {
 
-                // Will contain the raw JSON response as a string.
-                String fetchtMovieJsonStr = null;
-                // String format = "json";
-                //  String apikey = "xxxx";
-                String apikey = "b85cf4603ce5916a993dd400866808bc";
-
-
-                try {
-                    // Construct the URL for the Fetchmovie query
-                    // Possible parameters are avaiable at OWM's Fetchmovie API page, at
-                    // http://openweathermap.org/API#forecast
-
-                    final String FETCHMOVIE_BASE_URL = " http://api.themoviedb.org/3/movie/" + mMovieId + "/reviews?";
-                    final String QUERY_PARAM = "sort_by";
-                    final String API_KEY = "api_key";
-                    //
-
-
-                    // Create the request to MovieDetails, and open the connection
-                    Uri builtUri = Uri.parse(FETCHMOVIE_BASE_URL).buildUpon()
-                            //  .appendQueryParameter(QUERY_PARAM, params[0])
-                            .appendQueryParameter(API_KEY, apikey).build();
-                    URL url = new URL(builtUri.toString());
-                    Log.v(LOG_TAG, "Built URI " + builtUri.toString());
-
-                    urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("GET");
-                    urlConnection.connect();
-
-                    // Read the input stream into a String
-                    InputStream inputStream = urlConnection.getInputStream();
-                    StringBuffer buffer = new StringBuffer();
-                    if (inputStream == null) {
-                        // Nothing to do.
-                        return null;
-                    }
-                    reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                        // But it does make debugging a *lot* easier if you print out the completed
-                        // buffer for debugging.
-                        buffer.append(line + "\n");
+                    Log.v(LOG_TAG, preffaram);
+                    try {
+                        return getMovieReviewFromDB();
+                    } catch (DataFormatException e) {
+                        Log.e(LOG_TAG, e.getMessage(), e);
+                        e.printStackTrace();
                     }
 
-                    if (buffer.length() == 0) {
-                        // Stream was empty.  No point in parsing.
-                        return null;
-                    }
-                    fetchtMovieJsonStr = buffer.toString();
-                    //   Log.v(LOG_TAG, "Fetchmovie string: " + fetchtMovieJsonStr);
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "Error ", e);
-                    // If the code didn't successfully get the movie data, there's no point in attemping
-                    // to parse it.
+                    return null;
+                } else {
+                    HttpURLConnection urlConnection = null;
+                    BufferedReader reader = null;
+
+                    // Will contain the raw JSON response as a string.
+                    String fetchtMovieJsonStr = null;
+                    // String format = "json";
+                    //  String apikey = "xxxx";
+                    String apikey = "b85cf4603ce5916a993dd400866808bc";
 
 
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (final IOException e) {
-                            Log.e(LOG_TAG, "Error closing stream", e);
+                    try {
+                        // Construct the URL for the Fetchmovie query
+                        // Possible parameters are avaiable at OWM's Fetchmovie API page, at
+                        // http://openweathermap.org/API#forecast
+
+                        final String FETCHMOVIE_BASE_URL = " http://api.themoviedb.org/3/movie/" + mMovieId + "/reviews?";
+                        final String QUERY_PARAM = "sort_by";
+                        final String API_KEY = "api_key";
+                        //
+
+
+                        // Create the request to MovieDetails, and open the connection
+                        Uri builtUri = Uri.parse(FETCHMOVIE_BASE_URL).buildUpon()
+                                //  .appendQueryParameter(QUERY_PARAM, params[0])
+                                .appendQueryParameter(API_KEY, apikey).build();
+                        URL url = new URL(builtUri.toString());
+                        Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+
+                        urlConnection = (HttpURLConnection) url.openConnection();
+                        urlConnection.setRequestMethod("GET");
+                        urlConnection.connect();
+
+                        // Read the input stream into a String
+                        InputStream inputStream = urlConnection.getInputStream();
+                        StringBuffer buffer = new StringBuffer();
+                        if (inputStream == null) {
+                            // Nothing to do.
+                            return null;
+                        }
+                        reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                            // But it does make debugging a *lot* easier if you print out the completed
+                            // buffer for debugging.
+                            buffer.append(line + "\n");
+                        }
+
+                        if (buffer.length() == 0) {
+                            // Stream was empty.  No point in parsing.
+                            return null;
+                        }
+                        fetchtMovieJsonStr = buffer.toString();
+                        //   Log.v(LOG_TAG, "Fetchmovie string: " + fetchtMovieJsonStr);
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, "Error ", e);
+                        // If the code didn't successfully get the movie data, there's no point in attemping
+                        // to parse it.
+
+
+                    } finally {
+                        if (urlConnection != null) {
+                            urlConnection.disconnect();
+                        }
+                        if (reader != null) {
+                            try {
+                                reader.close();
+                            } catch (final IOException e) {
+                                Log.e(LOG_TAG, "Error closing stream", e);
+                            }
                         }
                     }
-                }
-                try {
-                    return getMovieDataFromJson(fetchtMovieJsonStr);
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
-                    e.printStackTrace();
-                }
+                    try {
+                        return getMovieDataFromJson(fetchtMovieJsonStr);
+                    } catch (JSONException e) {
+                        Log.e(LOG_TAG, e.getMessage(), e);
+                        e.printStackTrace();
+                    }
 
-                // This will only happen if there was an error getting or parsing the forecast.
-                return null;
+                    // This will only happen if there was an error getting or parsing the forecast.
+                    return null;
+                }
             }
-
 
             protected void onPostExecute(String[] result) {
                 if (result != null && mReviewAdapter != null) {

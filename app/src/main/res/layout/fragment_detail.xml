@@ -96,16 +96,16 @@ android:layout_marginLeft="5dp"
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                     android:background="#00A67C"
+
                     android:gravity="center"
                     android:layout_marginLeft="5dp"
-
+android:background="@drawable/starbtn"
 android:id="@+id/favourite_button"
 
                     android:layout_marginTop="25dp"
 
                     android:layout_gravity="center_horizontal"
-                    android:text="Favorite"/>
+                   />
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" android:id="@+id/testtext" />
@@ -129,23 +129,28 @@ android:id="@+id/favourite_button"
         <TextView
             android:id="@+id/movieoverview_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="8dp"
             android:text="@string/Overview" />
              />
 
-        <ListView   android:layout_width="match_parent"
+
+        <ListView
+
             android:layout_height="match_parent"
+            android:layout_width="match_parent"
             android:id="@+id/listview_trailer"
 
             />
 
-        <ListView   android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <ListView   android:layout_weight="1"
+            android:layout_height="0dp"
+            android:layout_width="wrap_content"
             android:id="@+id/listview_review"
             />
 
     </LinearLayout>
+
 
 </ScrollView>
