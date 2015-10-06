@@ -1,5 +1,6 @@
 package com.example.android.mymovie.app;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,21 +14,27 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.widget.AbsoluteLayout;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,10 +48,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,7 +64,9 @@ import java.util.zip.DataFormatException;
 public class DetailActivity extends ActionBarActivity {
 
     public static String mMovieId;
-    private static ArrayAdapter<String> mTrailerAdapter;
+   // private static ArrayAdapter<String> mTrailerAdapter;
+
+    public  static  TrailerAdapter mTrailerAdapter;
     private static ArrayAdapter<String> mReviewAdapter;
     public static  String mMovieTitle;
     public static  String mMovieOverview;
@@ -65,6 +76,9 @@ public class DetailActivity extends ActionBarActivity {
     public static String[] MovieTrailer ;
     public static String[] MovieReview ;
     public static String preffaram;
+    public static String mShareTrailerKey;
+
+    public static ArrayList<TrailerItem> TrailerList = new ArrayList();
 
    // public static ArrayList<String> MovieTrailer = new ArrayList();
   //  public static ArrayList<String> MovieReview = new ArrayList();
@@ -84,10 +98,14 @@ public class DetailActivity extends ActionBarActivity {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.detail, menu);
-        return true;
+    protected void onSaveInstanceState(Bundle outState) {
+
+    }
+
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -109,17 +127,18 @@ public class DetailActivity extends ActionBarActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class DetailFragment  extends Fragment {
+        private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+        private static final String MOVIE_TRAILER_SHARE = "http://www.youtube.com/watch?v=";
 
-        public DetailFragment () {
+        public DetailFragment() {
+            setHasOptionsMenu(true);
         }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
             final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
             String LOG_TAG = DetailActivity.class.getSimpleName();
-
             Intent intent = getActivity().getIntent();
 
 
@@ -175,22 +194,27 @@ public class DetailActivity extends ActionBarActivity {
             }
 
 
-          //  View headerView = ((LayoutInflater)Activity.this.getSystemService(Activity.this.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.header, null, false);
-           // listView.addHeaderView(headerView)
-          //  ViewGroup header = (ViewGroup)inflater.inflate(R.layout.trailer_header,listView, false);
 
-           // listView.addHeaderView(header);
-           // FetchTrailerTask TrailerTask= new FetchTrailerTask();
-           // TrailerTask.execute(mMovieId);
-            mTrailerAdapter =
+            mTrailerAdapter = new TrailerAdapter(this.getActivity(), TrailerList);
+            /*mTrailerAdapter =
                     new ArrayAdapter<String>(
                             getActivity(), // The current context (this activity)
                             R.layout.trailer_list, // The name of the layout ID.
                             R.id.list_trailer_text, // The ID of the textview to populate.
-                            new ArrayList<String>());
+                            new ArrayList<String>());*/
 
             ListView listView = (ListView) rootView.findViewById(R.id.listview_trailer);
+           /* ViewGroup header = (ViewGroup) inflater.inflate(
+                    R.layout.fragment_detail, listView, false);
+            listView.addHeaderView(header);*/
+
             listView.setAdapter(mTrailerAdapter);
+
+
+
+
+
+
 
 
             mReviewAdapter =
@@ -199,29 +223,26 @@ public class DetailActivity extends ActionBarActivity {
                             R.layout.review_list, // The name of the layout ID.
                             R.id.list_review_text, // The ID of the textview to populate.
                             new ArrayList<String>());
+
             ListView listViewreview = (ListView) rootView.findViewById(R.id.listview_review);
             listViewreview.setAdapter(mReviewAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                    TrailerItem movieTrailer = (TrailerItem) mTrailerAdapter.getItem(position);
 
-                    String movietrailer = mTrailerAdapter.getItem(position);
-                    TextView list_trailer_text = (TextView) rootView.findViewById(R.id.list_trailer_text);
-                    //  String videoId = list_trailer_text.getText().toString();
-                    //   Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:"+videoId));
-                    //   intent.putExtra("VIDEO_ID", videoId);
-                    //   startActivity(intent);*/
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + list_trailer_text.getText())));
-                    /*Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra(Intent.EXTRA_TEXT, forecast);
-                    startActivity(intent);*/
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + movieTrailer.getmTrailerKey())));
+
                 }
             });
 
             Button favourite_button = (Button) rootView.findViewById(R.id.favourite_button);
 
             favourite_button.setOnClickListener(new View.OnClickListener() {
+                //Insert data in table when click on favorit
+                //first check row is exist if yes
+                //then update else insert
 
                 @Override
                 public void onClick(View arg0) {
@@ -275,18 +296,23 @@ public class DetailActivity extends ActionBarActivity {
 
 
 
-                        //     if (checkFavorite("Trailer")==false) {
-                    if (MovieTrailer != null) {
-                        for (i = 0; i < MovieTrailer.length; i++) {
+
+                  //  if (MovieTrailer != null) {
+                        for (i = 0; i < mTrailerAdapter.getCount(); i++) {
                             Cursor cursorTrailer = getContext().getContentResolver().query(MovieContract.TrailerEntry.CONTENT_URI, null,
-                                    MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "="+" ' " + MovieTrailer[i]+ "' " ,
+                                    MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " +
+                                            MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "="+"'" +  mTrailerAdapter.getItem(i).getmTrailerKey()+ "'" +  " AND " +
+                                    MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE + "="+"'" +  mTrailerAdapter.getItem(i).getmTrailerName()+ "'"  ,
                                     null, null);
                             if (cursorTrailer.getCount() == 0) {
                                 ContentValues TrailerValues = new ContentValues();
                                 TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY,
                                         mMovieId);
                                 TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY,
-                                        MovieTrailer[i]);
+                                        mTrailerAdapter.getItem(i).getmTrailerKey()    );
+                                TrailerValues.put(MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE,
+                                        mTrailerAdapter.getItem(i).getmTrailerName()    );
+
 
                                 Uri uri1 = getContext().getContentResolver().insert(
                                         MovieContract.TrailerEntry.CONTENT_URI, TrailerValues);
@@ -296,25 +322,30 @@ public class DetailActivity extends ActionBarActivity {
                                 TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY,
                                         mMovieId);
                                 TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY,
-                                        MovieTrailer[i]);
+                                        mTrailerAdapter.getItem(i).getmTrailerKey());
+                                TrailerValues.put(MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE,
+                                        mTrailerAdapter.getItem(i).getmTrailerName());
 
                                 int uri1 = getContext().getContentResolver().update(
-                                        MovieContract.TrailerEntry.CONTENT_URI, TrailerValues, MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "="+" ' " + MovieTrailer[i]+ "' ", null);
+                                        MovieContract.TrailerEntry.CONTENT_URI, TrailerValues, MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId +
+                                                " AND " + MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "="+" ' " + mTrailerAdapter.getItem(i).getmTrailerKey()+ "' " +
+                                        " AND " + MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE + "="+" ' " + mTrailerAdapter.getItem(i).getmTrailerName()+ "' "
+                                        , null);
                             }
 
                             // }
 
                             //         }}
                         }
-                    }
+                  //  }
         //            if (checkFavorite("Review")==false) {
 
 if (MovieReview != null) {
     for (i = 0; i < MovieReview.length; i++) {
         Cursor cursorReview = getContext().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI, null,
-                MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT + "=" + " ' " + MovieReview[i]+ "' ",
-                null, null);
-        if (cursorReview.getCount() == 0) {
+               MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId ,
+               null, null);
+       if (cursorReview.getCount() == 0) {
             ContentValues ReviewValues = new ContentValues();
             ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
                     mMovieId);
@@ -322,24 +353,25 @@ if (MovieReview != null) {
                     MovieReview[i]);
             ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
                     MovieReview[i]);
-            //   if (checkFavorite("Review")==false) {
+
             Uri uri2 = getContext().getContentResolver().insert(
                     MovieContract.ReviewEntry.CONTENT_URI, ReviewValues);
-            //  }
-        } else {
+              }
 
-            ContentValues ReviewValues = new ContentValues();
-            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
-                    mMovieId);
+           /*else {
+
+           ContentValues ReviewValues = new ContentValues();
+        ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
+                   mMovieId);
             ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
-                    MovieReview[i]);
+        MovieReview[i]);
             ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
-                    MovieReview[i]);
-            //   if (checkFavorite("Review")==false) {
-            int uri1 = getContext().getContentResolver().update(
-                    MovieContract.TrailerEntry.CONTENT_URI, ReviewValues, MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT + "=" + " ' " + MovieReview[i]+ "' ", null);
+        MovieReview[i]);
+           //   if (checkFavorite("Review")==false) {
+                  int uri1 = getContext().getContentResolver().update(
+                          MovieContract.ReviewEntry.CONTENT_URI, ReviewValues, MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT + "=" + " ' " + MovieReview[i] + "' ", null);
 
-        }
+       }*/
 
     }
 }
@@ -356,74 +388,39 @@ if (MovieReview != null) {
 
 
 
-            Button testbtn = (Button) rootView.findViewById(R.id.test_button);
 
-            testbtn.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View arg0) {
-
-                    String URL = "content://com.example.android.mymovie.app/movie";
-                    String URL1 = "content://com.example.android.mymovie.app/trailer";
-
-                    Uri friends = Uri.parse(URL);
-
-                    Uri trailer = Uri.parse(URL1);
-
-                    Cursor c = getContext().getContentResolver().query(friends, null, null, null, "movie_id");
-                    Cursor c1 = getContext().getContentResolver().query(trailer, null, null, null, "movie_id");
-
-
-
-
-                    String result = "Javacodegeeks Results:";
-                    String result1 = "Javacodegeeks Results:";
-
-                    if (!c.moveToFirst()) {
-
-                        Toast.makeText(getContext(), result+" no content yet!", Toast.LENGTH_LONG).show();
-
-                    }else{
-
-                        do{
-
-                            result = result + "\n" + c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID))+","+
-                                    c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER))      ;
-
-
-
-                        } while (c.moveToNext());
-
-                     //   Toast.makeText(getContext(), result, Toast.LENGTH_LONG).show();
-
-                    }
-                    if (!c1.moveToFirst()) {
-
-                        Toast.makeText(getContext(), result1+" no content yet!", Toast.LENGTH_LONG).show();
-
-                    }else{
-
-                        do{
-
-                            result1 = result1 + "\n" + c1.getString(c.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY))+","+
-                                    c1.getString(c1.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY))      ;
-
-
-
-                        } while (c1.moveToNext());
-
-                        Toast.makeText(getContext(),result +"--"+ result1, Toast.LENGTH_LONG).show();
-
-                    }
-
-
-
-
-
-                }
-
-            });
             return rootView;
+
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            // Inflate the menu; this adds items to the action bar if it is present.
+            inflater.inflate(R.menu.detailfragemnt, menu);
+
+            // Retrieve the share menu item
+            MenuItem menuItem = menu.findItem(R.id.action_share);
+
+            // Get the provider and hold onto it to set/change the share intent.
+            ShareActionProvider mShareActionProvider =
+                    (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+            // Attach an intent to this ShareActionProvider.  You can update this at any time,
+            // like when the user selects a new piece of data they might like to share.
+            if (mShareActionProvider != null ) {
+                mShareActionProvider.setShareIntent(createShareForecastIntent());
+            } else {
+                Log.d(LOG_TAG, "Share Action Provider is null?");
+            }
+        }
+
+        private Intent createShareForecastIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT,
+                    MOVIE_TRAILER_SHARE + mShareTrailerKey);
+            return shareIntent;
         }
 
         public void onStart() {
@@ -439,40 +436,51 @@ if (MovieReview != null) {
 
 
 
-        public class FetchTrailerTask extends AsyncTask<String, Void,  String[]> {
+
+        public class FetchTrailerTask extends AsyncTask<String, Void,  List<TrailerItem>> {
 
             private final String LOG_TAG = FetchTrailerTask.class.getSimpleName();
 
-            //Take the String representing the complete forecast in JSON Format and
+            //Take the String representing the complete trailer in JSON Format and
             // pull out the data we need to construct the Strings needed for the wireframes.
 
             // Fortunately parsing is easy:  constructor takes the JSON string and converts it
             //into an Object hierarchy for us.
 
-            private  String[] getMovieDataFromJson(String fetchtMovieJsonStr)
+            private  List<TrailerItem> getMovieDataFromJson(String fetchtMovieJsonStr)
                     throws JSONException {
 
                 // These are the names of the JSON objects that need to be extracted.
                 final String TMB_RESULTS = "results";
                 final String TMB_KEY = "key";
+                final String TMB_NAME="name";
 
                 JSONObject fetchtMovieJson = new JSONObject(fetchtMovieJsonStr);
                 JSONArray movieArray = fetchtMovieJson.getJSONArray(TMB_RESULTS);
 
                 int numMovies = movieArray.length();
                 String[] resultStrs = new String[numMovies];
+                List<TrailerItem> trailerList = new ArrayList<>();
               //  Log.v(LOG_TAG,resultStrs.toString());
                 for (int i = 0; i < movieArray.length(); i++) {
 
 
 
-
+                    TrailerItem trailerItem = new TrailerItem();
 
                     JSONObject movieDetail = movieArray.getJSONObject(i);
+                    //First taralier for share
+
+if (i==0)
+{
+    mShareTrailerKey=movieDetail.getString(TMB_KEY);
 
 
-                    resultStrs[i] =  movieDetail.getString(TMB_KEY);;
+}
+                    trailerItem.setmTrailerKey(movieDetail.getString(TMB_KEY));
+                    trailerItem.setmTrailerName(movieDetail.getString(TMB_NAME));
 
+                    trailerList.add(trailerItem);
                      // Log.v(LOG_TAG, movieDetail.getString(TMB_KEY).toString());
 
                 }
@@ -480,10 +488,12 @@ if (MovieReview != null) {
                     Log.v(LOG_TAG, "Movie Trailer: " + s);
                 }
 
-                return resultStrs;
+                return trailerList;
             }
 
-            private  String[] getMovieTrailerFromDB()
+            //fetch trailer from table
+
+            private  List<TrailerItem> getMovieTrailerFromDB()
                     throws DataFormatException {
 
 
@@ -491,6 +501,7 @@ if (MovieReview != null) {
                 int i=0;
                 Cursor cursor = getContext().getContentResolver().query(MovieContract.TrailerEntry.CONTENT_URI,null,MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY+"="+ mMovieId,null,null,null);
                 String[] resultStrs = new String[cursor.getCount()];
+                List<TrailerItem> trailerList = new ArrayList<>();
                 if (!cursor.moveToFirst()) {
                     Log.v(LOG_TAG, "Favorite no found yet!");
                     // Toast.makeText(getContext(), "Favorite no found yet!", Toast.LENGTH_LONG).show();
@@ -499,9 +510,17 @@ if (MovieReview != null) {
 
                     do {
 
+                        if (i==0)
+                        {
+                            mShareTrailerKey=(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
+                        }
+                        TrailerItem trailerItem = new TrailerItem();
 
                         resultStrs[i++]   =(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
+                        trailerItem.setmTrailerKey(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
+                        trailerItem.setmTrailerName(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE)));
 
+                                trailerList.add(trailerItem);
 
 
 
@@ -512,12 +531,12 @@ if (MovieReview != null) {
 
                 }
 
-                return resultStrs;
+                return trailerList;
 
             }
 
             @Override
-            protected  String[] doInBackground(String... params) {
+            protected  List<TrailerItem> doInBackground(String... params) {
                 // These two need to be declared outside the try/catch
                 // so that they can be closed in the finally block.
 
@@ -526,7 +545,7 @@ if (MovieReview != null) {
                 if (params.length == 0) {
                     return null;
                 }
-
+//if favorites is select then fetch data from table
                 if ("favorites".equals(preffaram)) {
 
                     Log.v(LOG_TAG, preffaram);
@@ -626,17 +645,16 @@ if (MovieReview != null) {
             }
 
 
-            protected void onPostExecute(String[] result) {
-                if (result != null && mTrailerAdapter != null) {
+            protected void onPostExecute(List<TrailerItem> TrailerList) {
+                if (TrailerList!=null) {
 
                     mTrailerAdapter.clear();
-                    MovieTrailer  =result;
-                    for (String TrailerStr : result) {
-                    //    Log.v(LOG_TAG, "Movie Trailer: " + TrailerStr);
-                        mTrailerAdapter.add(TrailerStr);
 
-                    }
-                    // New data is back from the server.  Hooray!
+
+                        mTrailerAdapter.addAll(TrailerList);
+
+
+
                 }
             }
         }
@@ -645,7 +663,7 @@ if (MovieReview != null) {
 
             private final String LOG_TAG = FetchReviewTask.class.getSimpleName();
 
-            //Take the String representing the complete forecast in JSON Format and
+            //Take the String representing the complete reviews in JSON Format and
             // pull out the data we need to construct the Strings needed for the wireframes.
 
             // Fortunately parsing is easy:  constructor takes the JSON string and converts it
@@ -839,4 +857,5 @@ if (MovieReview != null) {
 
 
     }
+
 }

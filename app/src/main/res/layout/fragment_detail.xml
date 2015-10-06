@@ -10,11 +10,18 @@
         android:layout_height="wrap_content" />
 
 </RelativeLayout>-->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.android.mymovie.app.DetailActivity.DetailFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.mymovie.app.DetailActivity.DetailFragment">
+
+   >
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   >
 <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -26,6 +33,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <TextView
@@ -106,26 +115,20 @@ android:id="@+id/favourite_button"
 
                     android:layout_gravity="center_horizontal"
                    />
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" android:id="@+id/testtext" />
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#00A67C"
-                    android:gravity="center"
-                    android:layout_marginLeft="5dp"
 
-                    android:id="@+id/test_button"
-
-                    android:layout_marginTop="25dp"
-
-                    android:layout_gravity="center_horizontal"
-                    android:text="Favorite"/>
 
             </LinearLayout>
         </LinearLayout>
 
+
+        <TextView  android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Overview: "
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+
+            android:fontFamily="sans-serif-light"
+            android:textSize="20sp"></TextView>
         <TextView
             android:id="@+id/movieoverview_text"
             android:layout_width="match_parent"
@@ -135,22 +138,67 @@ android:id="@+id/favourite_button"
             android:text="@string/Overview" />
              />
 
-
-        <ListView
-
-            android:layout_height="match_parent"
+        <TextView  android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="sans-serif-light"
+            android:textSize="20sp"
+            android:text="Trailers: "></TextView>
+        <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            >
+        <com.example.android.mymovie.app.NestedListView
+            android:id="@+id/listview_trailer"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_weight="1"
+
+            android:cacheColorHint="#00000000" >
+        </com.example.android.mymovie.app.NestedListView>
+        </LinearLayout>
+    <!--<ListView
+
+            android:layout_height="0dp"
+            android:layout_width="fill_parent"ggg
+        android:layout_weight="4"
             android:id="@+id/listview_trailer"
 
-            />
+            />-->
+        <TextView  android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="sans-serif-light"
+            android:textSize="20sp"
+            android:text="Reviews: "></TextView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
 
-        <ListView   android:layout_weight="1"
-            android:layout_height="0dp"
-            android:layout_width="wrap_content"
+        >
+        <com.example.android.mymovie.app.NestedListView
             android:id="@+id/listview_review"
-            />
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_weight="1"
 
+            android:cacheColorHint="#00000000" >
+        </com.example.android.mymovie.app.NestedListView>
+
+    </LinearLayout>
+       <!-- <ListView  android:layout_height="0dp"
+            android:layout_width="fill_parent"
+            android:layout_weight="4"
+            android:id="@+id/listview_review"
+            />-->
     </LinearLayout>
 
 
+
 </ScrollView>
+   </RelativeLayout>

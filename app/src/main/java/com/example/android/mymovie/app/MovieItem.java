@@ -2,8 +2,6 @@ package com.example.android.mymovie.app;
 
 import android.graphics.Bitmap;
 
-import java.util.Date;
-
 /**
  * Created by Kamini on 9/14/2015.
  */
@@ -15,6 +13,8 @@ public class MovieItem {
     private String mMovieVoteAverage;
     private String mMovieReleaseDate;
     private String mMovieId;
+
+
 
 
 
@@ -79,4 +79,8 @@ public class MovieItem {
     public void setmMovieId(String mMovieId) {
         this.mMovieId = mMovieId;
     }
+
+
+
+
 }

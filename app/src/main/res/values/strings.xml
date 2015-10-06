@@ -3,6 +3,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="Overview">Overview Not Available!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="title_activity_detail">MovieDetail</string>
        <!-- Label for the sort oredr preference [CHAR LIMIT=30] -->

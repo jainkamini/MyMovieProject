@@ -69,6 +69,7 @@ public class FetchMovieFragment extends Fragment {
 
     }
 
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
        // inflater.inflate(R.menu.fetchmoviefragment, menu);
@@ -93,6 +94,7 @@ public class FetchMovieFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -102,7 +104,12 @@ public class FetchMovieFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 
+
+
+
 //call the adapter for constructor
+
+
         mMovieAdapter = new ImageAdapter(this.getActivity(), MovieURL);
 
         GridView mMoviesGrid  = (GridView) rootView.findViewById(R.id.movieGrid);

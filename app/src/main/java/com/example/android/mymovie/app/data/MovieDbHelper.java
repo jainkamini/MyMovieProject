@@ -41,6 +41,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 // the ID of the location entry associated with this weather data
                 TrailerEntry.COLUMN_MOVIEID_KEY + " INTEGER NOT NULL, " +
                 TrailerEntry.COLUMN_MOVIE_KEY + " TEXT NOT NULL, " +
+                TrailerEntry.COLUMN_TRAILER_NMAE + " TEXT NOT NULL, " +
 
 
 
