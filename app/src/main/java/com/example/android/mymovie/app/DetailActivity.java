@@ -13,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcel;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -73,7 +74,8 @@ public class DetailActivity extends ActionBarActivity {
     public static  String mMovieVoteAverage;
     public static   String mMovieReleaseDate;
     public static  String mMoviePoster;
-    public static String[] MovieTrailer ;
+ public static    MovieItem movieItem=new MovieItem(Parcel.obtain()) ;
+
     public static String[] MovieReview ;
     public static String preffaram;
     public static String mShareTrailerKey;
@@ -94,17 +96,21 @@ public class DetailActivity extends ActionBarActivity {
                     .add(R.id.container, new DetailFragment())
                     .commit();
         }
+
+
     }
 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-
+       outState.putParcelable(getString(R.string.MOVIE_KEY),movieItem);
+        super.onSaveInstanceState(outState);
     }
 
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        movieItem =  savedInstanceState.getParcelable(getString(R.string.MOVIE_KEY));
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -141,12 +147,13 @@ public class DetailActivity extends ActionBarActivity {
             String LOG_TAG = DetailActivity.class.getSimpleName();
             Intent intent = getActivity().getIntent();
 
-
+            Bundle data = intent.getExtras();
+            movieItem   = (MovieItem) data.getParcelable("MovieItem");
             if (intent != null && intent.hasExtra("Title")) {
 
 
                 mMovieTitle = (String) intent.getStringExtra("Title");
-                ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(mMovieTitle);
+                ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(movieItem.getMovieTitle());
             }
             if (intent != null && intent.hasExtra("Overview")) {
                 mMovieOverview = (String) intent.getStringExtra("Overview");
@@ -378,7 +385,8 @@ if (MovieReview != null) {
                //  }   }
 
 
-
+                    Toast.makeText(getContext(),
+                            " Favorite Added ", Toast.LENGTH_LONG).show();
                     Toast.makeText(getContext(),
                             " Favorite Added ", Toast.LENGTH_LONG).show();
                 }

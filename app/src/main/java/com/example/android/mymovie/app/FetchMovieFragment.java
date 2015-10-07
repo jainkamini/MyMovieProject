@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -50,7 +52,9 @@ public class FetchMovieFragment extends Fragment {
 
     public static String prefparam;
     public static ArrayList<MovieItem> MovieURL = new ArrayList();
+ //   public static ArrayList<MovieData> MovieParcable = new ArrayList();
     private GridView mMoviesGrid;
+  //  private static final String MOVIE_KEY ="keymovie" ;
 
 
 
@@ -63,12 +67,27 @@ public class FetchMovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+// Add this line in order for this fragment to handle menu events.
+        if (savedInstanceState==null || !savedInstanceState.containsKey(getString(R.string.MOVIE_KEY)))
+        {
+            MovieURL = new ArrayList();
+        }
+        else
+        {
+            Toast.makeText(getContext(),
+                    " i am here ", Toast.LENGTH_LONG).show();
 
+           MovieURL =  savedInstanceState.getParcelableArrayList(getString(R.string.MOVIE_KEY));
+        }
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
 
     }
-
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(getString(R.string.MOVIE_KEY),MovieURL);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -125,7 +144,7 @@ public class FetchMovieFragment extends Fragment {
 
 
                 MovieItem movie = (MovieItem) mMovieAdapter.getItem(position);
-
+                intent.putExtra("MovieItem", movie);
 
                 intent.putExtra("Title", movie.getMovieTitle());
                 intent.putExtra("Overview", movie.getmMovieOverView());
@@ -203,7 +222,7 @@ public class FetchMovieFragment extends Fragment {
 
             int numMovies = movieArray.length();
             String[] resultStrs = new String[numMovies];
-            List<MovieItem> moviesList = new ArrayList<>();
+           List<MovieItem> moviesList= new ArrayList<>();
             for(int i = 0; i < movieArray.length(); i++) {
 
 // don't need some of these yet
@@ -223,18 +242,33 @@ public class FetchMovieFragment extends Fragment {
                 //but it doesn't hurt to have the other code already
                // resultStrs[i] = "http://image.tmdb.org/t/p/w185"+poster;
                 //Set movie item
-                MovieItem movieItem = new MovieItem();
-                movieItem.setMovieImageurl(movieDetail.getString(TMB_POSTER));
+              //  Bundle bundle ;
+
+               MovieItem movieItem= new MovieItem(Parcel.obtain());
+               // movieItem.
+               // moviesList.add()
+            //  moviesList.add(new MovieItem(movieDetail.getString(TMB_POSTER));
+
+
+             //   moviesList. add(new MovieItem(movieDetail.getString(TMB_POSTER),
+                       /* movieDetail.getString(TMB_TITLE),
+                        movieDetail.getString(TMB_POSTER),
+                        movieDetail.getString(TMB_OVERVIW),
+                        movieDetail.getString(TMB_VOTE_AVG),
+                        movieDetail.getString(TMB_RELEASEDATE),*/
+                     //   movieDetail.getString(TMB_ID)));
+               movieItem.setMovieImageurl(movieDetail.getString(TMB_POSTER));
                 movieItem.setMovieTitle(movieDetail.getString(TMB_TITLE));
                 movieItem.setmMovieOverView(movieDetail.getString(TMB_OVERVIW));
                 movieItem.setmMovieVoteAverage(movieDetail.getString(TMB_VOTE_AVG));
                 movieItem.setmMovieReleaseDate(movieDetail.getString(TMB_RELEASEDATE));
                 movieItem.setmMovieId(movieDetail.getString(TMB_ID));
 
+
               //  InputStream input = connection.getInputStream();
               //  Bitmap myBitmap = BitmapFactory.decodeStream(input);
-             // Log.v(LOG_TAG,(movieDetail.getString(TMB_ID).toString()));
-                        moviesList.add(movieItem);
+              Log.v(LOG_TAG,(movieDetail.getString(TMB_ID).toString()));
+                       moviesList.add(movieItem);
               //  MovieData movie2=new MovieData(movies) ;
 
                 //movieList.add(poster);
@@ -255,7 +289,7 @@ public class FetchMovieFragment extends Fragment {
             } else {
 
                 do {
-                    MovieItem movieItem = new MovieItem();
+                    MovieItem movieItem = new MovieItem((Parcel.obtain()));
 
                     movieItem.setMovieImageurl(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER)));
                     movieItem.setMovieTitle(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE)));
@@ -289,7 +323,7 @@ public class FetchMovieFragment extends Fragment {
                 return null;
             }
 
-
+            prefparam=params[0];
             if ("favorites".equals(params[0])) {
                 prefparam=params[0];
                 Log.v(LOG_TAG, params[0]);
@@ -304,6 +338,7 @@ public class FetchMovieFragment extends Fragment {
             }
             else
             {
+
                 HttpURLConnection urlConnection = null;
                 BufferedReader reader = null;
 
@@ -403,8 +438,13 @@ public class FetchMovieFragment extends Fragment {
 
 
 
-                   // MovieURL.addAll(MovieList);
+
+              //  MovieURL.addAll(MovieList);
+
+
+
                     mMovieAdapter.addAll(MovieList);
+                mMovieAdapter.notifyDataSetChanged();
               //  }
 
 

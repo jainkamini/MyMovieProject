@@ -6,6 +6,8 @@
     <string name="action_share">Share</string>
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="title_activity_detail">MovieDetail</string>
+    <string name="MOVIE_KEY">MovieKey</string>
+
        <!-- Label for the sort oredr preference [CHAR LIMIT=30] -->
        <string name="pref_sortorder_label">Sort Order</string>
     <string name="pref_sortorder_label_popularity">Most Popular</string>
