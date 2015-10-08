@@ -169,6 +169,11 @@ public class DetailActivity extends ActionBarActivity {
                 Context context = this.getContext();
                 imageView.setAdjustViewBounds(true);
                 Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + movieItem.getmMoviePoster()).into(imageView);
+                mMovieOverview=movieItem.getmMovieOverView();
+                mMoviePoster=movieItem.getmMoviePoster();
+                mMovieTitle=movieItem.getMovieTitle();
+                mMovieReleaseDate=movieItem.getmMovieReleaseDate();
+                mMovieVoteAverage=movieItem.getmMovieVoteAverage();
 
 
             }
@@ -265,6 +270,7 @@ public class DetailActivity extends ActionBarActivity {
                                 MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovieId,null);
 
                     }
+
 //} int i;
 
                     int i;
@@ -316,9 +322,10 @@ public class DetailActivity extends ActionBarActivity {
         //            if (checkFavorite("Review")==false) {
 
 
-    for (i = 0; i < mTrailerAdapter.getCount(); i++) {
+    for (i = 0; i < mReviewAdapter.getCount(); i++) {
         Cursor cursorReview = getContext().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI, null,
-               MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId ,
+               MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId   + " AND " +
+                       MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR + "="+"'" +  mReviewAdapter.getItem(i).getmReviewAuthor() +"'",
                null, null);
        if (cursorReview.getCount() == 0) {
             ContentValues ReviewValues = new ContentValues();
