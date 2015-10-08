@@ -69,7 +69,7 @@ public class TrailerAdapter extends ArrayAdapter<TrailerItem>
 
 
         //  holder. imageView.setImageResource(mThumbIds[position]);
-        // holder .imageView.setAdjustViewBounds(true);
+        holder .trailerimageView.setAdjustViewBounds(true);
         holder.keytextView.setText(data.getmTrailerKey());
         holder.nametextView.setText(data.getmTrailerName());
     //    Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + data.getMovieImageurl()).into(holder.trailerimageView);

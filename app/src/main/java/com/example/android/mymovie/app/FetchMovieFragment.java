@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
@@ -51,7 +52,7 @@ public class FetchMovieFragment extends Fragment {
     ImageAdapter mMovieAdapter;
 
     public static String prefparam;
-    public static ArrayList<MovieItem> MovieURL = new ArrayList();
+    public  ArrayList<MovieItem> MovieURL = new ArrayList();
  //   public static ArrayList<MovieData> MovieParcable = new ArrayList();
     private GridView mMoviesGrid;
   //  private static final String MOVIE_KEY ="keymovie" ;
@@ -70,12 +71,12 @@ public class FetchMovieFragment extends Fragment {
 // Add this line in order for this fragment to handle menu events.
         if (savedInstanceState==null || !savedInstanceState.containsKey(getString(R.string.MOVIE_KEY)))
         {
-            MovieURL = new ArrayList();
+            MovieURL =new ArrayList();
         }
         else
         {
-            Toast.makeText(getContext(),
-                    " i am here ", Toast.LENGTH_LONG).show();
+           /* Toast.makeText(getContext(),
+                    " i am here ", Toast.LENGTH_LONG).show();*/
 
            MovieURL =  savedInstanceState.getParcelableArrayList(getString(R.string.MOVIE_KEY));
         }
@@ -146,7 +147,7 @@ public class FetchMovieFragment extends Fragment {
                 MovieItem movie = (MovieItem) mMovieAdapter.getItem(position);
                 intent.putExtra("MovieItem", movie);
 
-                intent.putExtra("Title", movie.getMovieTitle());
+              /* intent.putExtra("Title", movie.getMovieTitle());
                 intent.putExtra("Overview", movie.getmMovieOverView());
                 intent.putExtra("VoteAverage", movie.getmMovieVoteAverage());
 
@@ -154,7 +155,7 @@ public class FetchMovieFragment extends Fragment {
                 intent.putExtra("ReleaseDate", movie.getmMovieReleaseDate());
 
                 intent.putExtra("ImagePoster", movie.getMovieImageurl());
-                intent.putExtra("MovieID", movie.getmMovieId());
+                intent.putExtra("MovieID", movie.getmMovieId());*/
                 intent.putExtra("PrefParm", prefparam);
 
                 // Toast.makeText(getActivity(),movie.getmMovieId(), Toast.LENGTH_SHORT).show();
@@ -222,7 +223,7 @@ public class FetchMovieFragment extends Fragment {
 
             int numMovies = movieArray.length();
             String[] resultStrs = new String[numMovies];
-           List<MovieItem> moviesList= new ArrayList<>();
+          List<MovieItem> moviesList= new ArrayList<>();
             for(int i = 0; i < movieArray.length(); i++) {
 
 // don't need some of these yet
@@ -244,31 +245,40 @@ public class FetchMovieFragment extends Fragment {
                 //Set movie item
               //  Bundle bundle ;
 
-               MovieItem movieItem= new MovieItem(Parcel.obtain());
+            //  MovieItem movieItem;//= new MovieItem();
                // movieItem.
                // moviesList.add()
             //  moviesList.add(new MovieItem(movieDetail.getString(TMB_POSTER));
+             //  MovieItem[] movieItem={new MovieItem }
 
-
-             //   moviesList. add(new MovieItem(movieDetail.getString(TMB_POSTER),
-                       /* movieDetail.getString(TMB_TITLE),
+                moviesList.add(new MovieItem (movieDetail.getString(TMB_POSTER),
+                        movieDetail.getString(TMB_TITLE),
                         movieDetail.getString(TMB_POSTER),
                         movieDetail.getString(TMB_OVERVIW),
                         movieDetail.getString(TMB_VOTE_AVG),
-                        movieDetail.getString(TMB_RELEASEDATE),*/
-                     //   movieDetail.getString(TMB_ID)));
-               movieItem.setMovieImageurl(movieDetail.getString(TMB_POSTER));
-                movieItem.setMovieTitle(movieDetail.getString(TMB_TITLE));
-                movieItem.setmMovieOverView(movieDetail.getString(TMB_OVERVIW));
-                movieItem.setmMovieVoteAverage(movieDetail.getString(TMB_VOTE_AVG));
-                movieItem.setmMovieReleaseDate(movieDetail.getString(TMB_RELEASEDATE));
-                movieItem.setmMovieId(movieDetail.getString(TMB_ID));
+                        movieDetail.getString(TMB_RELEASEDATE),
+                        movieDetail.getString(TMB_ID)));
+              //  MovieURL. add(new MovieItem(movieDetail.getString(TMB_POSTER));
+
+               /* MovieURL. add(new MovieItem(movieDetail.getString(TMB_POSTER)),
+                        movieDetail.getString(TMB_TITLE),
+                        movieDetail.getString(TMB_POSTER),
+                        movieDetail.getString(TMB_OVERVIW),
+                        movieDetail.getString(TMB_VOTE_AVG),
+                        movieDetail.getString(TMB_RELEASEDATE),
+                        movieDetail.getString(TMB_ID)));*/
+              // movieItem.setMovieImageurl(movieDetail.getString(TMB_POSTER));
+              //  movieItem.setMovieTitle(movieDetail.getString(TMB_TITLE));
+              //  movieItem.setmMovieOverView(movieDetail.getString(TMB_OVERVIW));
+              //  movieItem.setmMovieVoteAverage(movieDetail.getString(TMB_VOTE_AVG));
+                //movieItem.setmMovieReleaseDate(movieDetail.getString(TMB_RELEASEDATE));
+              //  movieItem.setmMovieId(movieDetail.getString(TMB_ID));
 
 
               //  InputStream input = connection.getInputStream();
               //  Bitmap myBitmap = BitmapFactory.decodeStream(input);
               Log.v(LOG_TAG,(movieDetail.getString(TMB_ID).toString()));
-                       moviesList.add(movieItem);
+                  //     moviesList.add(movieItem);
               //  MovieData movie2=new MovieData(movies) ;
 
                 //movieList.add(poster);
@@ -281,6 +291,13 @@ public class FetchMovieFragment extends Fragment {
             throws DataFormatException {
 
             List<MovieItem> moviesList = new ArrayList<>();
+            String MovieImageurl;
+             String movieTitle;
+             String mMoviePoster;
+             String mMovieOverView;
+             String mMovieVoteAverage;
+             String mMovieReleaseDate;
+             String mMovieId;
             Cursor cursor = getContext().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,null,null,null,null,null);
             if (!cursor.moveToFirst()) {
                 Log.v(LOG_TAG, "Favorite no found yet!");
@@ -289,16 +306,27 @@ public class FetchMovieFragment extends Fragment {
             } else {
 
                 do {
-                    MovieItem movieItem = new MovieItem((Parcel.obtain()));
+                  //  MovieItem movieItem = new MovieItem((Parcel.obtain()));
 
-                    movieItem.setMovieImageurl(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER)));
-                    movieItem.setMovieTitle(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE)));
+                    MovieImageurl=   cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER));
+                    movieTitle=   cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE));
+                    mMoviePoster=   cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER));
+                    mMovieOverView=   cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW));
+                    mMovieVoteAverage= cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING));
+                    mMovieReleaseDate= cursor.getString( cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_DATE));
+                    mMovieId=   cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID));
+
+                    moviesList.add(new MovieItem(MovieImageurl,movieTitle,mMoviePoster,mMovieOverView,mMovieVoteAverage,mMovieReleaseDate,
+                            mMovieId ) );
+
+
+                          /*  movieItem.setMovieTitle(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE)));
                     movieItem.setmMovieOverView(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW)));
                     movieItem.setmMovieVoteAverage(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING)));
                     movieItem.setmMovieReleaseDate(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_DATE)));
-                    movieItem.setmMovieId(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
+                    movieItem.setmMovieId(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));*/
 
-                    moviesList.add(movieItem);
+                   // moviesList.add(movieItem);
 
 
                 } while (cursor.moveToNext());
@@ -431,15 +459,10 @@ public class FetchMovieFragment extends Fragment {
             super.onPostExecute(MovieList);
             //clear movie list and adapter
             if (MovieList != null) {
-                MovieURL.clear();
+               // MovieURL.clear();
                 mMovieAdapter.clear();
 
-               // for (String resultStrs : result) {
 
-
-
-
-              //  MovieURL.addAll(MovieList);
 
 
 

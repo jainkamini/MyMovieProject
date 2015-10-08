@@ -68,25 +68,28 @@ public class DetailActivity extends ActionBarActivity {
    // private static ArrayAdapter<String> mTrailerAdapter;
 
     public  static  TrailerAdapter mTrailerAdapter;
-    private static ArrayAdapter<String> mReviewAdapter;
+    private static ReviewAdapter  mReviewAdapter;
     public static  String mMovieTitle;
     public static  String mMovieOverview;
     public static  String mMovieVoteAverage;
     public static   String mMovieReleaseDate;
     public static  String mMoviePoster;
- public static    MovieItem movieItem=new MovieItem(Parcel.obtain()) ;
+ public static    MovieItem movieItem;
+   // public  ArrayList<MovieItem> MovieItem = new ArrayList();
 
     public static String[] MovieReview ;
     public static String preffaram;
     public static String mShareTrailerKey;
 
     public static ArrayList<TrailerItem> TrailerList = new ArrayList();
+    public static ArrayList<ReviewItem> ReviewList = new ArrayList();
 
    // public static ArrayList<String> MovieTrailer = new ArrayList();
   //  public static ArrayList<String> MovieReview = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         //this is new added
@@ -103,14 +106,19 @@ public class DetailActivity extends ActionBarActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-       outState.putParcelable(getString(R.string.MOVIE_KEY),movieItem);
+        outState.putParcelable("MovieKey", movieItem);
+      outState.putParcelableArrayList("TrailerKey", TrailerList);
+        outState.putParcelableArrayList("ReviewKey", ReviewList);
+
         super.onSaveInstanceState(outState);
     }
 
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        movieItem =  savedInstanceState.getParcelable(getString(R.string.MOVIE_KEY));
+        movieItem=  savedInstanceState.getParcelable("MovieKey");
+        TrailerList=savedInstanceState.getParcelableArrayList("TrailerKey");
+        ReviewList=savedInstanceState.getParcelableArrayList("ReviewKey");
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -146,90 +154,50 @@ public class DetailActivity extends ActionBarActivity {
             final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
             String LOG_TAG = DetailActivity.class.getSimpleName();
             Intent intent = getActivity().getIntent();
+            if (intent != null && intent.hasExtra("MovieItem")) {
+                Bundle data = intent.getExtras();
 
-            Bundle data = intent.getExtras();
-            movieItem   = (MovieItem) data.getParcelable("MovieItem");
-            if (intent != null && intent.hasExtra("Title")) {
+                movieItem = (MovieItem) data.getParcelable("MovieItem");
 
-
-                mMovieTitle = (String) intent.getStringExtra("Title");
                 ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(movieItem.getMovieTitle());
-            }
-            if (intent != null && intent.hasExtra("Overview")) {
-                mMovieOverview = (String) intent.getStringExtra("Overview");
-                ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(mMovieOverview);
-            }
-            if (intent != null && intent.hasExtra("VoteAverage")) {
-                 mMovieVoteAverage = (String) intent.getStringExtra("VoteAverage");
-                ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage + "/10");
-            }
-            if (intent != null && intent.hasExtra("MovieID")) {
-                mMovieId =(String) intent.getStringExtra("MovieID");
-               // mMovieId=(int)mMovieIds;
-                Log.v(LOG_TAG, mMovieId);
-            }
-
-            if (intent != null && intent.hasExtra("ReleaseDate")) {
-              //  Log.v(LOG_TAG, (String) intent.getStringExtra("ReleaseDate"));
-                 mMovieReleaseDate = (String) intent.getStringExtra("ReleaseDate");
-
-
-
-                    Log.v(LOG_TAG, (String) mMovieReleaseDate);
-
-
-                        mMovieReleaseDate = mMovieReleaseDate.substring(0, 4);
-
-
-                    ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
+                ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(movieItem.getmMovieOverView());
+                ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(movieItem.getmMovieVoteAverage() + "/10");
+                mMovieId = movieItem.getmMovieId();
+                mMovieReleaseDate = movieItem.getmMovieReleaseDate().substring(0, 4);
+                ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
+                ImageView imageView = (ImageView) rootView.findViewById(R.id.movieposter_image);
+                Context context = this.getContext();
+                imageView.setAdjustViewBounds(true);
+                Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + movieItem.getmMoviePoster()).into(imageView);
 
 
             }
+
+
+
+
+
+
             if (intent != null && intent.hasExtra("PrefParm"))
             {
                 preffaram=(String)intent.getStringExtra("PrefParm");
             }
-            if (intent != null && intent.hasExtra("ImagePoster")) {
-                 mMoviePoster = (String)intent.getStringExtra("ImagePoster");
 
-              ImageView imageView=(ImageView) rootView.findViewById(R.id.movieposter_image);
-                 Context context=this.getContext();
-                imageView.setAdjustViewBounds(true);
-                Picasso.with(context).load( "http://image.tmdb.org/t/p/w185"+mMoviePoster).into(imageView);
-
-
-            }
 
 
 
             mTrailerAdapter = new TrailerAdapter(this.getActivity(), TrailerList);
-            /*mTrailerAdapter =
-                    new ArrayAdapter<String>(
-                            getActivity(), // The current context (this activity)
-                            R.layout.trailer_list, // The name of the layout ID.
-                            R.id.list_trailer_text, // The ID of the textview to populate.
-                            new ArrayList<String>());*/
+
 
             ListView listView = (ListView) rootView.findViewById(R.id.listview_trailer);
-           /* ViewGroup header = (ViewGroup) inflater.inflate(
-                    R.layout.fragment_detail, listView, false);
-            listView.addHeaderView(header);*/
-
             listView.setAdapter(mTrailerAdapter);
 
 
 
 
 
+           mReviewAdapter = new ReviewAdapter(this.getActivity(), ReviewList);
 
-
-
-            mReviewAdapter =
-                    new ArrayAdapter<String>(
-                            getActivity(), // The current context (this activity)
-                            R.layout.review_list, // The name of the layout ID.
-                            R.id.list_review_text, // The ID of the textview to populate.
-                            new ArrayList<String>());
 
             ListView listViewreview = (ListView) rootView.findViewById(R.id.listview_review);
             listViewreview.setAdapter(mReviewAdapter);
@@ -347,8 +315,8 @@ public class DetailActivity extends ActionBarActivity {
                   //  }
         //            if (checkFavorite("Review")==false) {
 
-if (MovieReview != null) {
-    for (i = 0; i < MovieReview.length; i++) {
+
+    for (i = 0; i < mTrailerAdapter.getCount(); i++) {
         Cursor cursorReview = getContext().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI, null,
                MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId ,
                null, null);
@@ -357,13 +325,13 @@ if (MovieReview != null) {
             ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
                     mMovieId);
             ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
-                    MovieReview[i]);
+                    mReviewAdapter.getItem(i).getmReviewAuthor());
             ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
-                    MovieReview[i]);
+                    mReviewAdapter.getItem(i).getmReviewContent());
 
             Uri uri2 = getContext().getContentResolver().insert(
                     MovieContract.ReviewEntry.CONTENT_URI, ReviewValues);
-              }
+
 
            /*else {
 
@@ -468,13 +436,13 @@ if (MovieReview != null) {
 
                 int numMovies = movieArray.length();
                 String[] resultStrs = new String[numMovies];
-                List<TrailerItem> trailerList = new ArrayList<>();
+                List<TrailerItem> Trailerlistitem = new ArrayList<>();
               //  Log.v(LOG_TAG,resultStrs.toString());
                 for (int i = 0; i < movieArray.length(); i++) {
 
 
 
-                    TrailerItem trailerItem = new TrailerItem();
+
 
                     JSONObject movieDetail = movieArray.getJSONObject(i);
                     //First taralier for share
@@ -485,18 +453,15 @@ if (i==0)
 
 
 }
-                    trailerItem.setmTrailerKey(movieDetail.getString(TMB_KEY));
-                    trailerItem.setmTrailerName(movieDetail.getString(TMB_NAME));
 
-                    trailerList.add(trailerItem);
-                     // Log.v(LOG_TAG, movieDetail.getString(TMB_KEY).toString());
+                    Trailerlistitem.add(new TrailerItem(movieDetail.getString(TMB_KEY),movieDetail.getString(TMB_NAME)));
 
-                }
-                for (String s : resultStrs) {
-                    Log.v(LOG_TAG, "Movie Trailer: " + s);
+
+
+                   // Log.v(LOG_TAG, "Movie Trailer: " , );
                 }
 
-                return trailerList;
+                return Trailerlistitem;
             }
 
             //fetch trailer from table
@@ -509,7 +474,7 @@ if (i==0)
                 int i=0;
                 Cursor cursor = getContext().getContentResolver().query(MovieContract.TrailerEntry.CONTENT_URI,null,MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY+"="+ mMovieId,null,null,null);
                 String[] resultStrs = new String[cursor.getCount()];
-                List<TrailerItem> trailerList = new ArrayList<>();
+                List<TrailerItem> Trailerlistitem = new ArrayList<>();
                 if (!cursor.moveToFirst()) {
                     Log.v(LOG_TAG, "Favorite no found yet!");
                     // Toast.makeText(getContext(), "Favorite no found yet!", Toast.LENGTH_LONG).show();
@@ -522,16 +487,17 @@ if (i==0)
                         {
                             mShareTrailerKey=(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
                         }
-                        TrailerItem trailerItem = new TrailerItem();
+                        Trailerlistitem.add(new TrailerItem((cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY))),
+                                cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE))));
 
-                        resultStrs[i++]   =(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
-                        trailerItem.setmTrailerKey(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
-                        trailerItem.setmTrailerName(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE)));
+            //            resultStrs[i++]   =(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
+                      //  trailerItem.setmTrailerKey(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY)));
+                        //trailerItem.setmTrailerName(cursor.getString(cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE)));
 
-                                trailerList.add(trailerItem);
+                             //   trailerList.add(trailerItem);
 
 
-
+i++;
 
                     } while (cursor.moveToNext());
 
@@ -539,7 +505,7 @@ if (i==0)
 
                 }
 
-                return trailerList;
+                return Trailerlistitem;
 
             }
 
@@ -653,13 +619,14 @@ if (i==0)
             }
 
 
-            protected void onPostExecute(List<TrailerItem> TrailerList) {
-                if (TrailerList!=null) {
+            protected void onPostExecute(List<TrailerItem> Trailerlistitem) {
+                if (Trailerlistitem!=null) {
 
                     mTrailerAdapter.clear();
 
 
-                        mTrailerAdapter.addAll(TrailerList);
+                        mTrailerAdapter.addAll(Trailerlistitem);
+                    mTrailerAdapter.notifyDataSetChanged();
 
 
 
@@ -667,7 +634,7 @@ if (i==0)
             }
         }
 
-        public class FetchReviewTask extends AsyncTask<String, Void,  String[]> {
+        public class FetchReviewTask extends AsyncTask<String, Void,  List<ReviewItem>> {
 
             private final String LOG_TAG = FetchReviewTask.class.getSimpleName();
 
@@ -677,7 +644,7 @@ if (i==0)
             // Fortunately parsing is easy:  constructor takes the JSON string and converts it
             //into an Object hierarchy for us.
 
-            private  String[] getMovieDataFromJson(String fetchtMovieJsonStr)
+            private   List<ReviewItem> getMovieDataFromJson(String fetchtMovieJsonStr)
                     throws JSONException {
 
                 // These are the names of the JSON objects that need to be extracted.
@@ -690,6 +657,7 @@ if (i==0)
 
                 int numMovies = movieArray.length();
                 String[] resultStrs = new String[numMovies];
+                List<ReviewItem> reviewitem=new ArrayList<>();
                 //  Log.v(LOG_TAG,resultStrs.toString());
                 for (int i = 0; i < movieArray.length(); i++) {
 
@@ -698,21 +666,19 @@ if (i==0)
 
 
                     JSONObject movieDetail = movieArray.getJSONObject(i);
+                    reviewitem.add(new ReviewItem(movieDetail.getString(TMB_AUTHOR),movieDetail.getString(TMB_CONTENT) ));
 
-
-                    resultStrs[i] =  movieDetail.getString(TMB_CONTENT) +" - "+movieDetail.getString(TMB_AUTHOR) ;
+                 //   resultStrs[i] =  movieDetail.getString(TMB_CONTENT) +" - "+movieDetail.getString(TMB_AUTHOR) ;
 
                     // Log.v(LOG_TAG, movieDetail.getString(TMB_KEY).toString());
 
                 }
-                for (String s : resultStrs) {
-                    Log.v(LOG_TAG, "Movie Reviews: " + s);
-                }
 
-                return resultStrs;
+
+                return reviewitem;
             }
 
-            private  String[] getMovieReviewFromDB()
+            private  List<ReviewItem> getMovieReviewFromDB()
                     throws DataFormatException {
 
 
@@ -720,6 +686,7 @@ if (i==0)
                 int i=0;
                 Cursor cursor = getContext().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI,null,MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY+"="+ mMovieId,null,null,null);
                 String[] resultStrs = new String[cursor.getCount()];
+                List<ReviewItem> reviewitem=new ArrayList<>();
                 if (!cursor.moveToFirst()) {
                     Log.v(LOG_TAG, "Favorite no found yet!");
                     // Toast.makeText(getContext(), "Favorite no found yet!", Toast.LENGTH_LONG).show();
@@ -728,10 +695,11 @@ if (i==0)
 
                     do {
 
+                        reviewitem.add(new ReviewItem((cursor.getString(cursor.getColumnIndex(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR))),
+                                (cursor.getString(cursor.getColumnIndex(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT)))));
+                     //   resultStrs[i++]   =(cursor.getString(cursor.getColumnIndex(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT)));
 
-                        resultStrs[i++]   =(cursor.getString(cursor.getColumnIndex(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT)));
-
-
+i++;
 
 
 
@@ -741,11 +709,11 @@ if (i==0)
 
                 }
 
-                return resultStrs;
+                return reviewitem;
 
             }
             @Override
-            protected  String[] doInBackground(String... params) {
+            protected  List<ReviewItem> doInBackground(String... params) {
                 // These two need to be declared outside the try/catch
                 // so that they can be closed in the finally block.
 
@@ -851,15 +819,22 @@ if (i==0)
                 }
             }
 
-            protected void onPostExecute(String[] result) {
-                if (result != null && mReviewAdapter != null) {
+            protected void onPostExecute(List<ReviewItem> ReviewItem) {
+
+                if (ReviewItem != null) {
+
+                    mReviewAdapter.clear();
+                    mReviewAdapter.addAll(ReviewItem);
+                    mReviewAdapter.notifyDataSetChanged();
+                }
+               /* if (result != null && mReviewAdapter != null) {
                     mReviewAdapter.clear();
                     MovieReview=result;
                     for (String dayForecastStr : result) {
                         mReviewAdapter.add(dayForecastStr);
                     }
                     // New data is back from the server.  Hooray!
-                }
+                }*/
             }
         }
 

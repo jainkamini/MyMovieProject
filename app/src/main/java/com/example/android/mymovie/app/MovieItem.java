@@ -10,20 +10,29 @@ import android.os.Parcelable;
 public class MovieItem implements Parcelable {
     private String MovieImageurl;
     private String movieTitle;
-    private Bitmap mMoviePoster;
+    private String mMoviePoster;
     private String mMovieOverView;
     private String mMovieVoteAverage;
     private String mMovieReleaseDate;
     private String mMovieId;
-    protected MovieItem(Parcel in) {
-        MovieImageurl = in.readString();
-        movieTitle = in.readString();
-        mMoviePoster = (Bitmap) in.readValue(Bitmap.class.getClassLoader());
-        mMovieOverView = in.readString();
-        mMovieVoteAverage = in.readString();
-        mMovieReleaseDate = in.readString();
-        mMovieId = in.readString();
-    }
+
+
+
+    public MovieItem(String MovieImageurl,String movieTitle,String mMoviePoster,String mMovieOverView,String mMovieVoteAverage,String mMovieReleaseDate
+               , String     mMovieId )
+    {
+
+        this.MovieImageurl= MovieImageurl;
+        this. movieTitle=movieTitle;
+       this. mMoviePoster=mMoviePoster;
+        this.mMovieOverView=mMovieOverView;
+        this.mMovieVoteAverage=mMovieVoteAverage;
+        this.mMovieReleaseDate=mMovieReleaseDate;
+        this.mMovieId=mMovieId;
+
+            }
+
+
 
     public String getmMovieId() {
         return mMovieId;
@@ -41,11 +50,11 @@ public class MovieItem implements Parcelable {
         this.mMovieOverView = mMovieOverView;
     }
 
-    public Bitmap getmMoviePoster() {
+    public String getmMoviePoster() {
         return mMoviePoster;
     }
 
-    public void setmMoviePoster(Bitmap mMoviePoster) {
+    public void setmMoviePoster(String mMoviePoster) {
         this.mMoviePoster = mMoviePoster;
     }
 
@@ -86,11 +95,22 @@ public class MovieItem implements Parcelable {
         return 0;
     }
 
+    protected MovieItem(Parcel in) {
+        MovieImageurl = in.readString();
+        movieTitle = in.readString();
+        mMoviePoster =  in.readString();
+        mMovieOverView = in.readString();
+        mMovieVoteAverage = in.readString();
+        mMovieReleaseDate = in.readString();
+        mMovieId = in.readString();
+    }
+
+
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(MovieImageurl);
         dest.writeString(movieTitle);
-        dest.writeValue(mMoviePoster);
+        dest.writeString(mMoviePoster);
         dest.writeString(mMovieOverView);
         dest.writeString(mMovieVoteAverage);
         dest.writeString(mMovieReleaseDate);
