@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -92,11 +93,16 @@ public class DetailActivity extends ActionBarActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        if(getResources().getBoolean(R.bool.portrait_only)){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
         //this is new added
         //change palceholder to DetailFragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
+                    .add(R.id.movie_detail_container, new DetailFragment())
                     .commit();
         }
 
@@ -106,9 +112,9 @@ public class DetailActivity extends ActionBarActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable("MovieKey", movieItem);
-      outState.putParcelableArrayList("TrailerKey", TrailerList);
-        outState.putParcelableArrayList("ReviewKey", ReviewList);
+       // outState.putParcelable("MovieKey", movieItem);
+      //outState.putParcelableArrayList("TrailerKey", TrailerList);
+      //  outState.putParcelableArrayList("ReviewKey", ReviewList);
 
         super.onSaveInstanceState(outState);
     }
@@ -116,9 +122,9 @@ public class DetailActivity extends ActionBarActivity {
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        movieItem=  savedInstanceState.getParcelable("MovieKey");
-        TrailerList=savedInstanceState.getParcelableArrayList("TrailerKey");
-        ReviewList=savedInstanceState.getParcelableArrayList("ReviewKey");
+     //  movieItem=  savedInstanceState.getParcelable("MovieKey");
+      //  TrailerList=savedInstanceState.getParcelableArrayList("TrailerKey");
+      //  ReviewList=savedInstanceState.getParcelableArrayList("ReviewKey");
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -144,6 +150,8 @@ public class DetailActivity extends ActionBarActivity {
         private static final String LOG_TAG = DetailFragment.class.getSimpleName();
         private static final String MOVIE_TRAILER_SHARE = "http://www.youtube.com/watch?v=";
 
+
+
         public DetailFragment() {
             setHasOptionsMenu(true);
         }
@@ -154,38 +162,38 @@ public class DetailActivity extends ActionBarActivity {
             final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
             String LOG_TAG = DetailActivity.class.getSimpleName();
             Intent intent = getActivity().getIntent();
-            if (intent != null && intent.hasExtra("MovieItem")) {
-                Bundle data = intent.getExtras();
+            Bundle extras = intent.getExtras();
+            try {
+                Log.e("args?", this.getArguments().toString());
+                intent.putExtras(this.getArguments());
 
-                movieItem = (MovieItem) data.getParcelable("MovieItem");
+            } catch (Exception e) {}
 
-                ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(movieItem.getMovieTitle());
-                ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(movieItem.getmMovieOverView());
-                ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(movieItem.getmMovieVoteAverage() + "/10");
-                mMovieId = movieItem.getmMovieId();
-                mMovieReleaseDate = movieItem.getmMovieReleaseDate().substring(0, 4);
-                ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
-                ImageView imageView = (ImageView) rootView.findViewById(R.id.movieposter_image);
-                Context context = this.getContext();
-                imageView.setAdjustViewBounds(true);
-                Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + movieItem.getmMoviePoster()).into(imageView);
-                mMovieOverview=movieItem.getmMovieOverView();
-                mMoviePoster=movieItem.getmMoviePoster();
-                mMovieTitle=movieItem.getMovieTitle();
-                mMovieReleaseDate=movieItem.getmMovieReleaseDate();
-                mMovieVoteAverage=movieItem.getmMovieVoteAverage();
-
-
-            }
-
+            mMovieOverview=intent.getStringExtra("Overview");
+            mMoviePoster=intent.getStringExtra("Movieposter");
+            mMovieTitle=intent.getStringExtra("Title");
+            mMovieReleaseDate=intent.getStringExtra("ReleaseDate");
+            mMovieVoteAverage=intent.getStringExtra("VoteAverage");
+            mMovieId = intent.getStringExtra("MovieID");
+            preffaram=intent.getStringExtra("PrefParm");
+            ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(mMovieTitle);
+            ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(mMovieOverview);
+            ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage + "/10");
+            ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
+            ImageView imageView = (ImageView) rootView.findViewById(R.id.movieposter_image);
+            Context context = this.getContext();
+            imageView.setAdjustViewBounds(true);
+            Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + mMoviePoster).into(imageView);
 
 
 
 
+            if (intent.hasExtra("Movieposter")) {
+                FetchTrailerTask TrailerTask = new FetchTrailerTask();
+                TrailerTask.execute(mMovieId);
+                FetchReviewTask ReviewTask = new FetchReviewTask();
+                ReviewTask.execute(mMovieId);
 
-            if (intent != null && intent.hasExtra("PrefParm"))
-            {
-                preffaram=(String)intent.getStringExtra("PrefParm");
             }
 
 
@@ -408,11 +416,11 @@ public class DetailActivity extends ActionBarActivity {
 
         public void onStart() {
             super.onStart();
-          //  updateMovie();
-           FetchTrailerTask TrailerTask= new FetchTrailerTask();
-           TrailerTask.execute(mMovieId);
-            FetchReviewTask ReviewTask= new FetchReviewTask();
-            ReviewTask.execute(mMovieId);
+            //  updateMovie();
+        // FetchTrailerTask TrailerTask= new FetchTrailerTask();
+          //TrailerTask.execute(mMovieId);
+           //FetchReviewTask ReviewTask= new FetchReviewTask();
+            //ReviewTask.execute(mMovieId);
 
 
         }

@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 
@@ -55,6 +56,9 @@ public class FetchMovieFragment extends Fragment {
     public  ArrayList<MovieItem> MovieURL = new ArrayList();
  //   public static ArrayList<MovieData> MovieParcable = new ArrayList();
     private GridView mMoviesGrid;
+    int mPosition;
+    boolean mDualPane;
+    int mCurCheckPosition = 0;
   //  private static final String MOVIE_KEY ="keymovie" ;
 
 
@@ -68,7 +72,17 @@ public class FetchMovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
 // Add this line in order for this fragment to handle menu events.
+        View detailsFrame = getActivity().findViewById(R.id.movie_detail_container);
+        if (detailsFrame!=null)
+        {
+            mDualPane = true;
+        }
+       else {
+            mDualPane = false;
+        }
+
         if (savedInstanceState==null || !savedInstanceState.containsKey(getString(R.string.MOVIE_KEY)))
         {
             MovieURL =new ArrayList();
@@ -83,10 +97,12 @@ public class FetchMovieFragment extends Fragment {
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
 
+
+
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(getString(R.string.MOVIE_KEY),MovieURL);
+        outState.putParcelableArrayList(getString(R.string.MOVIE_KEY), MovieURL);
         super.onSaveInstanceState(outState);
     }
 
@@ -95,6 +111,12 @@ public class FetchMovieFragment extends Fragment {
        // inflater.inflate(R.menu.fetchmoviefragment, menu);
     }
 
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(int posttion);
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -132,39 +154,83 @@ public class FetchMovieFragment extends Fragment {
 
         mMovieAdapter = new ImageAdapter(this.getActivity(), MovieURL);
 
-        GridView mMoviesGrid  = (GridView) rootView.findViewById(R.id.movieGrid);
+        GridView mMoviesGrid = (GridView) rootView.findViewById(R.id.movieGrid);
         //Log.v("movieList size is", String.valueOf(movieList.size()));
 
         mMoviesGrid.setAdapter(mMovieAdapter);
 
 
+
+
+        if (savedInstanceState != null) {
+            // Restore last state for checked position.
+            mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
+        }
+
+        if (mDualPane) {
+            // In dual-pane mode, the list view highlights the selected item.
+            mMoviesGrid.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            // Make sure our UI is in the correct state.
+            showDetails(0);
+        }
+
+
+
+
+
         mMoviesGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                //  Intent intent = new Intent(getActivity(), DetailActivity.class);
+                showDetails(position);
 
 
-                MovieItem movie = (MovieItem) mMovieAdapter.getItem(position);
-                intent.putExtra("MovieItem", movie);
-
-              /* intent.putExtra("Title", movie.getMovieTitle());
-                intent.putExtra("Overview", movie.getmMovieOverView());
-                intent.putExtra("VoteAverage", movie.getmMovieVoteAverage());
 
 
-                intent.putExtra("ReleaseDate", movie.getmMovieReleaseDate());
 
-                intent.putExtra("ImagePoster", movie.getMovieImageurl());
-                intent.putExtra("MovieID", movie.getmMovieId());*/
-                intent.putExtra("PrefParm", prefparam);
 
-                // Toast.makeText(getActivity(),movie.getmMovieId(), Toast.LENGTH_SHORT).show();
-                startActivity(intent);
-                // Toast.makeText(getActivity(), item, Toast.LENGTH_SHORT).show();
             }
         });
 
         return rootView;
+    }
+
+
+
+    void showDetails(int index) {
+        MovieItem movie = (MovieItem) mMovieAdapter.getItem(index);
+        Bundle extras = new Bundle();
+        extras.putString("Movieposter", movie.getmMoviePoster());
+        extras.putString("Title", movie.getMovieTitle());
+        extras.putString("VoteAverage", movie.getmMovieVoteAverage());
+        extras.putString("Overview", movie.getmMovieOverView());
+        extras.putString("ReleaseDate", movie.getmMovieReleaseDate());
+        extras.putString("PrefParm", prefparam);
+        extras.putString("MovieID", movie.getmMovieId());
+
+        Intent intent = new Intent(getActivity(), DetailActivity.class)
+                .putExtras(extras);
+
+
+        //if this is tablet view, take over that frame/fragment. dont take whole window
+
+        DetailActivity.DetailFragment displayFrag = (DetailActivity.DetailFragment) getFragmentManager()
+                .findFragmentById(R.id.movie_detail_container);
+
+        if (displayFrag == null) {
+            Log.e("v==", "null");
+            startActivity(intent);
+        } else {
+            Log.e("v==", "not null");
+            // fragment replacement stuff
+            DetailActivity.DetailFragment fragment = new DetailActivity.DetailFragment();
+            fragment.setArguments(extras);
+
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container, fragment, "frag tag")
+                    .commit();
+
+        }
     }
     private void updateMovie() {
         FetchMovieTask movieTask = new FetchMovieTask();
@@ -468,6 +534,14 @@ public class FetchMovieFragment extends Fragment {
 
                     mMovieAdapter.addAll(MovieList);
                 mMovieAdapter.notifyDataSetChanged();
+
+//                if (mPosition == ListView.INVALID_POSITION && MovieList != null && !MovieList.isEmpty()) {
+//                    // select first item (tablet/phone UI distinction cannot be made here, let MainActivity decide)
+//                    mPosition = 0;
+//                    ((Callback) getActivity()).onItemSelected(MovieList.get(0));
+//                } else {
+//                    mMoviesGrid .smoothScrollToPositionFromTop(mPosition, 0);
+//                }
               //  }
 
 
