@@ -627,8 +627,8 @@ i++;
                     // Will contain the raw JSON response as a string.
                     String fetchtMovieJsonStr = null;
                     // String format = "json";
-                    //  String apikey = "xxxx";
-                    String apikey = "b85cf4603ce5916a993dd400866808bc";
+                     String apikey = "xxxx";
+
 
 
                     try {
@@ -839,8 +839,8 @@ i++;
                     // Will contain the raw JSON response as a string.
                     String fetchtMovieJsonStr = null;
                     // String format = "json";
-                    //  String apikey = "xxxx";
-                    String apikey = "b85cf4603ce5916a993dd400866808bc";
+                     String apikey = "xxxx";
+
 
 
                     try {
