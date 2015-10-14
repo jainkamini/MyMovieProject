@@ -10,7 +10,7 @@
         android:layout_height="wrap_content" />
 
 </RelativeLayout>-->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/retlativedetail"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.android.mymovie.app.DetailActivity.DetailFragment"
     android:layout_width="match_parent"
@@ -42,11 +42,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#00A67C"
-            android:fontFamily="sans-serif-light"
+            android:fontFamily="sans-serif-condensed"
             android:gravity="left"
             android:padding="30dp"
-            android:text="@string/hello_world"
-            android:textSize="30sp" />
+            android:textStyle="bold"
+            android:textAppearance="?android:textAppearanceLarge"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -102,13 +103,13 @@ android:layout_marginLeft="5dp"
                     android:layout_marginTop="25dp"
 
                     android:layout_gravity="center_horizontal" />
-                <Button
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
                     android:gravity="center"
                     android:layout_marginLeft="5dp"
-android:background="@drawable/starbtn"
+android:background="@drawable/favoriteadd"
 android:id="@+id/favourite_button"
 
                     android:layout_marginTop="25dp"
@@ -126,9 +127,9 @@ android:id="@+id/favourite_button"
             android:text="Overview: "
             android:layout_marginTop="16dp"
             android:layout_marginLeft="8dp"
-
+            android:textStyle="bold"
             android:fontFamily="sans-serif-light"
-            android:textSize="20sp"></TextView>
+            android:textAppearance="?android:textAppearanceLarge"></TextView>
         <TextView
             android:id="@+id/movieoverview_text"
             android:layout_width="match_parent"
@@ -143,8 +144,9 @@ android:id="@+id/favourite_button"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="8dp"
             android:fontFamily="sans-serif-light"
-            android:textSize="20sp"
-            android:text="Trailers: "></TextView>
+android:text="Trailer:"
+            android:textStyle="bold"
+            android:textAppearance="?android:textAppearanceLarge"></TextView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -156,7 +158,8 @@ android:id="@+id/favourite_button"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:layout_weight="1"
-
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
             android:cacheColorHint="#00000000" >
         </com.example.android.mymovie.app.NestedListView>
         </LinearLayout>
@@ -173,7 +176,8 @@ android:id="@+id/favourite_button"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="8dp"
             android:fontFamily="sans-serif-light"
-            android:textSize="20sp"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textStyle="bold"
             android:text="Reviews: "></TextView>
     <LinearLayout
         android:layout_width="match_parent"
@@ -186,7 +190,8 @@ android:id="@+id/favourite_button"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:layout_weight="1"
-
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
             android:cacheColorHint="#00000000" >
         </com.example.android.mymovie.app.NestedListView>
 

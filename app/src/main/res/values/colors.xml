@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="grey">#cccccc</color>
+    <color name="movie_dark_red">#FF0000</color>
+    <color name="movie_red">#FF1919</color>
+    <color name="movie_light_red">#FF3333</color>
+
+
+
+</resources>

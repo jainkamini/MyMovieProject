@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -35,9 +36,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,6 +87,11 @@ public class DetailActivity extends ActionBarActivity {
 
     public static ArrayList<TrailerItem> TrailerList = new ArrayList();
     public static ArrayList<ReviewItem> ReviewList = new ArrayList();
+    static final String   DETAIL_URI = "URI";
+    private static String movie_key="";
+   // Intent intent = getActivity().getIntent();
+  // Intent intent;
+    //Bundle extras;// = intent.getExtras();
 
    // public static ArrayList<String> MovieTrailer = new ArrayList();
   //  public static ArrayList<String> MovieReview = new ArrayList();
@@ -93,16 +101,31 @@ public class DetailActivity extends ActionBarActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        if(getResources().getBoolean(R.bool.portrait_only)){
+       /* if(getResources().getBoolean(R.bool.portrait_only)){
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+        }*/
         //this is new added
         //change palceholder to DetailFragment
-        if (savedInstanceState == null) {
+       /* if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.movie_detail_container, new DetailFragment())
+                    .commit();
+        }*/
+
+        if (savedInstanceState == null) {
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DETAIL_URI, getIntent().getData());
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(arguments);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.movie_detail_container, fragment)
                     .commit();
         }
 
@@ -112,9 +135,9 @@ public class DetailActivity extends ActionBarActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-       // outState.putParcelable("MovieKey", movieItem);
-      //outState.putParcelableArrayList("TrailerKey", TrailerList);
-      //  outState.putParcelableArrayList("ReviewKey", ReviewList);
+       // outState.putParcelable("MovieKey", extras);
+      outState.putParcelableArrayList("TrailerKey", TrailerList);
+        outState.putParcelableArrayList("ReviewKey", ReviewList);
 
         super.onSaveInstanceState(outState);
     }
@@ -122,9 +145,9 @@ public class DetailActivity extends ActionBarActivity {
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-     //  movieItem=  savedInstanceState.getParcelable("MovieKey");
-      //  TrailerList=savedInstanceState.getParcelableArrayList("TrailerKey");
-      //  ReviewList=savedInstanceState.getParcelableArrayList("ReviewKey");
+      //  extras=  savedInstanceState.getParcelable("MovieKey");
+        TrailerList=savedInstanceState.getParcelableArrayList("TrailerKey");
+        ReviewList=savedInstanceState.getParcelableArrayList("ReviewKey");
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -149,7 +172,7 @@ public class DetailActivity extends ActionBarActivity {
     public static class DetailFragment  extends Fragment {
         private static final String LOG_TAG = DetailFragment.class.getSimpleName();
         private static final String MOVIE_TRAILER_SHARE = "http://www.youtube.com/watch?v=";
-
+        static final String   DETAIL_URI = "URI";
 
 
         public DetailFragment() {
@@ -163,144 +186,167 @@ public class DetailActivity extends ActionBarActivity {
             String LOG_TAG = DetailActivity.class.getSimpleName();
             Intent intent = getActivity().getIntent();
             Bundle extras = intent.getExtras();
+
+            Bundle arguments = getArguments();
+                 if (arguments != null) {
+                     extras=  (Bundle) arguments.getParcelable(DETAIL_URI);
+
+
             try {
                 Log.e("args?", this.getArguments().toString());
                 intent.putExtras(this.getArguments());
 
             } catch (Exception e) {}
+                  //   mMovieOverview=movieItem.getmMovieOverView();
 
-            mMovieOverview=intent.getStringExtra("Overview");
-            mMoviePoster=intent.getStringExtra("Movieposter");
-            mMovieTitle=intent.getStringExtra("Title");
-            mMovieReleaseDate=intent.getStringExtra("ReleaseDate");
-            mMovieVoteAverage=intent.getStringExtra("VoteAverage");
-            mMovieId = intent.getStringExtra("MovieID");
-            preffaram=intent.getStringExtra("PrefParm");
-            ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(mMovieTitle);
-            ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(mMovieOverview);
-            ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage + "/10");
-            ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
-            ImageView imageView = (ImageView) rootView.findViewById(R.id.movieposter_image);
-            Context context = this.getContext();
-            imageView.setAdjustViewBounds(true);
-            Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + mMoviePoster).into(imageView);
+                     mMovieOverview = intent.getStringExtra("Overview");
+                     mMoviePoster =intent.getStringExtra("Movieposter");
+                     mMovieTitle =intent.getStringExtra("Title");
+                     mMovieReleaseDate = intent.getStringExtra("ReleaseDate");
+                     mMovieVoteAverage =intent.getStringExtra("VoteAverage");
+                     mMovieId = intent.getStringExtra("MovieID");
+                     preffaram =intent.getStringExtra("PrefParm");
+                     ((TextView) rootView.findViewById(R.id.movietitle_text)).setText(mMovieTitle);
+                     ((TextView) rootView.findViewById(R.id.movieoverview_text)).setText(mMovieOverview);
+                     ((TextView) rootView.findViewById(R.id.movievoteAverage_text)).setText(mMovieVoteAverage + "/10");
+                     ((TextView) rootView.findViewById(R.id.moviereleasedate_text)).setText(mMovieReleaseDate);
+                     ImageView imageView = (ImageView) rootView.findViewById(R.id.movieposter_image);
+                     Context context = this.getContext();
+                     imageView.setAdjustViewBounds(true);
+                     Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + mMoviePoster).into(imageView);
 
 
 
 
-            if (intent.hasExtra("Movieposter")) {
-                FetchTrailerTask TrailerTask = new FetchTrailerTask();
-                TrailerTask.execute(mMovieId);
-                FetchReviewTask ReviewTask = new FetchReviewTask();
-                ReviewTask.execute(mMovieId);
+                     if (intent.hasExtra("Movieposter")) {
+                         FetchTrailerTask TrailerTask = new FetchTrailerTask();
+                         TrailerTask.execute(mMovieId);
+                         FetchReviewTask ReviewTask = new FetchReviewTask();
+                         ReviewTask.execute(mMovieId);
 
+                     }
+
+
+                     mTrailerAdapter = new TrailerAdapter(this.getActivity(), TrailerList);
+
+
+                     ListView listView = (ListView) rootView.findViewById(R.id.listview_trailer);
+                     listView.setAdapter(mTrailerAdapter);
+
+                mReviewAdapter = new ReviewAdapter(this.getActivity(), ReviewList);
+
+
+                     ListView listViewreview = (ListView) rootView.findViewById(R.id.listview_review);
+                     listViewreview.setAdapter(mReviewAdapter);
+
+
+
+                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                                                         @Override
+                                                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                                                             TrailerItem movieTrailer = (TrailerItem) mTrailerAdapter.getItem(position);
+
+                                                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + movieTrailer.getmTrailerKey())));
+
+                                                         }
+                                                     }
+
+
+                     );
+                 }
+else
+                 {
+                     RelativeLayout relativeLayout=(RelativeLayout)rootView.findViewById(R.id.retlativedetail);
+                     relativeLayout.setVisibility(View.GONE);
+
+                 }
+
+       final     ImageButton favourite_button = (ImageButton) rootView.findViewById(R.id.favourite_button);
+            if (CheckFavorite()==true) {
+               // favourite_button.setImageDrawable(getResources().getDrawable((R.drawable.favoriteadd)));
+                favourite_button.setBackground(getResources().getDrawable((R.drawable.favoriteadd)));
+
+            }
+                else
+            {
+                favourite_button.setBackground(getResources().getDrawable((R.drawable.favoritedelete)));
             }
 
 
-
-
-            mTrailerAdapter = new TrailerAdapter(this.getActivity(), TrailerList);
-
-
-            ListView listView = (ListView) rootView.findViewById(R.id.listview_trailer);
-            listView.setAdapter(mTrailerAdapter);
-
-
-
-
-
-           mReviewAdapter = new ReviewAdapter(this.getActivity(), ReviewList);
-
-
-            ListView listViewreview = (ListView) rootView.findViewById(R.id.listview_review);
-            listViewreview.setAdapter(mReviewAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    TrailerItem movieTrailer = (TrailerItem) mTrailerAdapter.getItem(position);
-
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + movieTrailer.getmTrailerKey())));
-
-                }
-            });
-
-            Button favourite_button = (Button) rootView.findViewById(R.id.favourite_button);
 
             favourite_button.setOnClickListener(new View.OnClickListener() {
                 //Insert data in table when click on favorit
                 //first check row is exist if yes
                 //then update else insert
-
+//if row already exist the change images on button and delete data in favorite after clicking
                 @Override
                 public void onClick(View arg0) {
- //if (checkFavorite("Movie")==false)  {
-                    Cursor cursor = getContext().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, null,
-                            MovieContract.MovieEntry.COLUMN_MOVIE_ID+"="+mMovieId,
-                            null,null);
-                    if (cursor.getCount()==0 ) {
-                        ContentValues movieValues = new ContentValues();
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-                                mMovieId);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
-                                mMoviePoster);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
-                                mMovieVoteAverage);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DATE,
-                                mMovieReleaseDate);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
-                                mMovieOverview);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
-                                mMovieTitle);
 
-                        Uri uri = getContext().getContentResolver().insert(
-                                MovieContract.MovieEntry.CONTENT_URI, movieValues);
 
-                    }
-                    else
-                    {
+                    if (CheckFavorite() == true) {
+                        Cursor cursor = getContext().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, null,
+                                MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovieId,
+                                null, null);
+                        if (cursor.getCount() == 0) {
+                            ContentValues movieValues = new ContentValues();
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                                    mMovieId);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
+                                    mMoviePoster);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
+                                    mMovieVoteAverage);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DATE,
+                                    mMovieReleaseDate);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
+                                    mMovieOverview);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+                                    mMovieTitle);
 
-                        ContentValues movieValues = new ContentValues();
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-                                mMovieId);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
-                                mMoviePoster);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
-                                mMovieVoteAverage);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DATE,
-                                mMovieReleaseDate);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
-                                mMovieOverview);
-                        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
-                                mMovieTitle);
+                            Uri uri = getContext().getContentResolver().insert(
+                                    MovieContract.MovieEntry.CONTENT_URI, movieValues);
 
-                        int  uri = getContext().getContentResolver().update(
-                                MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovieId,null);
+                        } else {
 
-                    }
+                            ContentValues movieValues = new ContentValues();
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+                                    mMovieId);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
+                                    mMoviePoster);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,
+                                    mMovieVoteAverage);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_DATE,
+                                    mMovieReleaseDate);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
+                                    mMovieOverview);
+                            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
+                                    mMovieTitle);
+
+                            int uri = getContext().getContentResolver().update(
+                                    MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovieId, null);
+
+                        }
 
 //} int i;
 
-                    int i;
+                        int i;
 
 
-
-
-                  //  if (MovieTrailer != null) {
+                        //  if (MovieTrailer != null) {
                         for (i = 0; i < mTrailerAdapter.getCount(); i++) {
                             Cursor cursorTrailer = getContext().getContentResolver().query(MovieContract.TrailerEntry.CONTENT_URI, null,
                                     MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " +
-                                            MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "="+"'" +  mTrailerAdapter.getItem(i).getmTrailerKey()+ "'" +  " AND " +
-                                    MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE + "="+"'" +  mTrailerAdapter.getItem(i).getmTrailerName()+ "'"  ,
+                                            MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "=" + "'" + mTrailerAdapter.getItem(i).getmTrailerKey() + "'" + " AND " +
+                                            MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE + "=" + "'" + mTrailerAdapter.getItem(i).getmTrailerName() + "'",
                                     null, null);
                             if (cursorTrailer.getCount() == 0) {
                                 ContentValues TrailerValues = new ContentValues();
                                 TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY,
                                         mMovieId);
                                 TrailerValues.put(MovieContract.TrailerEntry.COLUMN_MOVIE_KEY,
-                                        mTrailerAdapter.getItem(i).getmTrailerKey()    );
+                                        mTrailerAdapter.getItem(i).getmTrailerKey());
                                 TrailerValues.put(MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE,
-                                        mTrailerAdapter.getItem(i).getmTrailerName()    );
+                                        mTrailerAdapter.getItem(i).getmTrailerName());
 
 
                                 Uri uri1 = getContext().getContentResolver().insert(
@@ -317,8 +363,8 @@ public class DetailActivity extends ActionBarActivity {
 
                                 int uri1 = getContext().getContentResolver().update(
                                         MovieContract.TrailerEntry.CONTENT_URI, TrailerValues, MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId +
-                                                " AND " + MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "="+" ' " + mTrailerAdapter.getItem(i).getmTrailerKey()+ "' " +
-                                        " AND " + MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE + "="+" ' " + mTrailerAdapter.getItem(i).getmTrailerName()+ "' "
+                                                " AND " + MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + "=" + " ' " + mTrailerAdapter.getItem(i).getmTrailerKey() + "' " +
+                                                " AND " + MovieContract.TrailerEntry.COLUMN_TRAILER_NMAE + "=" + " ' " + mTrailerAdapter.getItem(i).getmTrailerName() + "' "
                                         , null);
                             }
 
@@ -326,52 +372,64 @@ public class DetailActivity extends ActionBarActivity {
 
                             //         }}
                         }
-                  //  }
-        //            if (checkFavorite("Review")==false) {
+                        //  }
+                        //            if (checkFavorite("Review")==false) {
 
 
-    for (i = 0; i < mReviewAdapter.getCount(); i++) {
-        Cursor cursorReview = getContext().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI, null,
-               MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId   + " AND " +
-                       MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR + "="+"'" +  mReviewAdapter.getItem(i).getmReviewAuthor() +"'",
-               null, null);
-       if (cursorReview.getCount() == 0) {
-            ContentValues ReviewValues = new ContentValues();
-            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
-                    mMovieId);
-            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
-                    mReviewAdapter.getItem(i).getmReviewAuthor());
-            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
-                    mReviewAdapter.getItem(i).getmReviewContent());
+                        for (i = 0; i < mReviewAdapter.getCount(); i++) {
+                            Cursor cursorReview = getContext().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI, null,
+                                    MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " +
+                                            MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR + "=" + "'" + mReviewAdapter.getItem(i).getmReviewAuthor() + "'",
+                                    null, null);
+                            if (cursorReview.getCount() == 0) {
+                                ContentValues ReviewValues = new ContentValues();
+                                ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
+                                        mMovieId);
+                                ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
+                                        mReviewAdapter.getItem(i).getmReviewAuthor());
+                                ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
+                                        mReviewAdapter.getItem(i).getmReviewContent());
 
-            Uri uri2 = getContext().getContentResolver().insert(
-                    MovieContract.ReviewEntry.CONTENT_URI, ReviewValues);
-
-
-           /*else {
-
-           ContentValues ReviewValues = new ContentValues();
-        ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY,
-                   mMovieId);
-            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_AUTHOR,
-        MovieReview[i]);
-            ReviewValues.put(MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT,
-        MovieReview[i]);
-           //   if (checkFavorite("Review")==false) {
-                  int uri1 = getContext().getContentResolver().update(
-                          MovieContract.ReviewEntry.CONTENT_URI, ReviewValues, MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId + " AND " + MovieContract.ReviewEntry.COLUMN_MOVIE_CONTENT + "=" + " ' " + MovieReview[i] + "' ", null);
-
-       }*/
-
-    }
-}
-               //  }   }
+                                Uri uri2 = getContext().getContentResolver().insert(
+                                        MovieContract.ReviewEntry.CONTENT_URI, ReviewValues);
 
 
-                    Toast.makeText(getContext(),
-                            " Favorite Added ", Toast.LENGTH_LONG).show();
-                    Toast.makeText(getContext(),
-                            " Favorite Added ", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        favourite_button.setBackground(getResources().getDrawable((R.drawable.favoritedelete)));
+
+                        Toast.makeText(getContext(),
+                                " Favorite Added ", Toast.LENGTH_LONG).show();
+
+                    } else {
+
+                        int uri1 = getContext().getContentResolver().delete(
+                                MovieContract.MovieEntry.CONTENT_URI, MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovieId
+
+                                , null);
+                        int urit = getContext().getContentResolver().delete(
+                                MovieContract.TrailerEntry.CONTENT_URI, MovieContract.TrailerEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId
+
+                                , null);
+                        int urir = getContext().getContentResolver().delete(
+                                MovieContract.ReviewEntry.CONTENT_URI, MovieContract.ReviewEntry.COLUMN_MOVIEID_KEY + "=" + mMovieId
+
+                                , null);
+
+                        favourite_button.setBackground(getResources().getDrawable((R.drawable.favoriteadd)));
+                        Toast.makeText(getContext(),
+                                " Favorite Deleted ", Toast.LENGTH_LONG).show();
+                        if ("favorites".equals(preffaram)) {
+                          /*  RelativeLayout relativeLayout = (RelativeLayout) rootView.findViewById(R.id.retlativedetail);
+                            relativeLayout.setVisibility(View.GONE);*/
+                         /* FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                            DetailActivity.DetailFragment nextFrag = new DetailActivity.DetailFragment();
+                            nextFrag.setArguments(getActivity().getIntent().getExtras());
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.movie_detail_container, nextFrag).commit();*/
+                            ((FetchMovieFragment.Callback) getActivity()).onItemSelected(null);
+                        }
+                    }
                 }
 
             });
@@ -426,7 +484,22 @@ public class DetailActivity extends ActionBarActivity {
         }
 
 
+public boolean CheckFavorite()
+{
+    Cursor cursor = getContext().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, null,
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovieId,
+            null, null);
 
+    if (cursor.getCount() == 0) {
+
+        return true;
+    }
+    else {
+        return false;
+    }
+
+
+}
 
         public class FetchTrailerTask extends AsyncTask<String, Void,  List<TrailerItem>> {
 
@@ -491,8 +564,8 @@ if (i==0)
                 String[] resultStrs = new String[cursor.getCount()];
                 List<TrailerItem> Trailerlistitem = new ArrayList<>();
                 if (!cursor.moveToFirst()) {
-                    Log.v(LOG_TAG, "Favorite no found yet!");
-                    // Toast.makeText(getContext(), "Favorite no found yet!", Toast.LENGTH_LONG).show();
+                 //   Log.v(LOG_TAG, "Favorite no found yet!");
+                     Toast.makeText(getContext(), "Favorite no found yet!", Toast.LENGTH_SHORT).show();
 
                 } else {
 
@@ -537,7 +610,7 @@ i++;
 //if favorites is select then fetch data from table
                 if ("favorites".equals(preffaram)) {
 
-                    Log.v(LOG_TAG, preffaram);
+                  //  Log.v(LOG_TAG, preffaram);
                     try {
                         return getMovieTrailerFromDB();
                     } catch (DataFormatException e) {
@@ -574,7 +647,7 @@ i++;
                                 //  .appendQueryParameter(QUERY_PARAM, params[0])
                                 .appendQueryParameter(API_KEY, apikey).build();
                         URL url = new URL(builtUri.toString());
-                        Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+                       // Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
                         urlConnection = (HttpURLConnection) url.openConnection();
                         urlConnection.setRequestMethod("GET");
@@ -635,9 +708,12 @@ i++;
 
 
             protected void onPostExecute(List<TrailerItem> Trailerlistitem) {
+
+
+                mTrailerAdapter.clear();
                 if (Trailerlistitem!=null) {
 
-                    mTrailerAdapter.clear();
+
 
 
                         mTrailerAdapter.addAll(Trailerlistitem);
@@ -646,6 +722,14 @@ i++;
 
 
                 }
+
+                if (mTrailerAdapter.getCount()==0)
+                {
+                    Toast.makeText(getContext(),
+                            " Trailer Not available ", Toast.LENGTH_SHORT).show();
+                }
+
+
             }
         }
 
@@ -739,7 +823,7 @@ i++;
                 }
                 if ("favorites".equals(preffaram)) {
 
-                    Log.v(LOG_TAG, preffaram);
+                  //  Log.v(LOG_TAG, preffaram);
                     try {
                         return getMovieReviewFromDB();
                     } catch (DataFormatException e) {
@@ -775,7 +859,7 @@ i++;
                                 //  .appendQueryParameter(QUERY_PARAM, params[0])
                                 .appendQueryParameter(API_KEY, apikey).build();
                         URL url = new URL(builtUri.toString());
-                        Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+                      //  Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
                         urlConnection = (HttpURLConnection) url.openConnection();
                         urlConnection.setRequestMethod("GET");
@@ -835,12 +919,18 @@ i++;
             }
 
             protected void onPostExecute(List<ReviewItem> ReviewItem) {
-
+                mReviewAdapter.clear();
                 if (ReviewItem != null) {
 
-                    mReviewAdapter.clear();
+
                     mReviewAdapter.addAll(ReviewItem);
                     mReviewAdapter.notifyDataSetChanged();
+                }
+
+                if (mReviewAdapter.getCount()==0 )
+                {
+                    Toast.makeText(getContext(),
+                            " Review Not available ", Toast.LENGTH_SHORT).show();
                 }
                /* if (result != null && mReviewAdapter != null) {
                     mReviewAdapter.clear();

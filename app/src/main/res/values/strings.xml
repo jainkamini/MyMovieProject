@@ -12,6 +12,8 @@
        <string name="pref_sortorder_label">Sort Order</string>
     <string name="pref_sortorder_label_popularity">Most Popular</string>
     <string name="pref_sortorder_label_highestvote">Highest Rated</string>
+    <string name="pref_sortorder_label_upcoming">Upcoming Movie</string>
+
     <string name="pref_sortorder_label_favorites">My Favorites</string>
 
     <!-- Key name for sort order preference in SharedPreferences [CHAR LIMIT=NONE] -->
@@ -24,6 +26,7 @@
         <string name="pref_sortorder_highestrated" translatable="false">vote_average.desc </string>
     <!-- Value in SharedPreferences for favorites option [CHAR LIMIT=NONE] -->
     <string name="pref_sortorder_favorites" translatable="false">favorites </string>
+    <string name="pref_sortorder_upcoming" translatable="false">upcoming </string>
 
 
 </resources>

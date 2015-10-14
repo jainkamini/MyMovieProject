@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcel;
@@ -56,9 +57,13 @@ public class FetchMovieFragment extends Fragment {
     public  ArrayList<MovieItem> MovieURL = new ArrayList();
  //   public static ArrayList<MovieData> MovieParcable = new ArrayList();
     private GridView mMoviesGrid;
-    int mPosition;
-    boolean mDualPane;
-    int mCurCheckPosition = 0;
+    private static final String TWO_PANE = "two_pane";
+    private boolean mTwoPane;
+    private int mPosition = GridView.INVALID_POSITION;
+    private boolean mUsedefaultitem;
+private static final String SETTING_KEY="settingkey";
+    private String mSttingStatus="";
+    private static final String SELECTED_KEY = "selected_position";
   //  private static final String MOVIE_KEY ="keymovie" ;
 
 
@@ -71,38 +76,48 @@ public class FetchMovieFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-// Add this line in order for this fragment to handle menu events.
-        View detailsFrame = getActivity().findViewById(R.id.movie_detail_container);
-        if (detailsFrame!=null)
-        {
-            mDualPane = true;
-        }
-       else {
-            mDualPane = false;
-        }
-
-        if (savedInstanceState==null || !savedInstanceState.containsKey(getString(R.string.MOVIE_KEY)))
-        {
-            MovieURL =new ArrayList();
-        }
-        else
-        {
-           /* Toast.makeText(getContext(),
-                    " i am here ", Toast.LENGTH_LONG).show();*/
-
-           MovieURL =  savedInstanceState.getParcelableArrayList(getString(R.string.MOVIE_KEY));
-        }
-        // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+
+//check savedInstanceState
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.MOVIE_KEY))) {
+            MovieURL = savedInstanceState.getParcelableArrayList(getString(R.string.MOVIE_KEY));
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            mTwoPane = savedInstanceState.getBoolean(TWO_PANE);
+            mSttingStatus = savedInstanceState.getString(SETTING_KEY);
+
+
+
+        }
+
+        if (savedInstanceState==null || !savedInstanceState.containsKey(getString(R.string.MOVIE_KEY))) {
+            MovieURL=new ArrayList<>();
+            mPosition=GridView.INVALID_POSITION;
+
+
+        }
+
+
+
+
+
 
 
 
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        // When tablets rotate, the currently selected list item needs to be saved.
+        // When no item is selected, mPosition will be set to GridView.INVALID_POSITION,
+        // so check for that before storing.
+
+
         outState.putParcelableArrayList(getString(R.string.MOVIE_KEY), MovieURL);
+        outState.putInt(SELECTED_KEY, mPosition);
+        outState.putBoolean(TWO_PANE, mTwoPane);
+        outState.putString(SETTING_KEY,mSttingStatus);
+
+      // outState.putParcelableArrayList(getString(R.string.MOVIE_KEY), MovieURL);*/
         super.onSaveInstanceState(outState);
     }
 
@@ -115,7 +130,7 @@ public class FetchMovieFragment extends Fragment {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(int posttion);
+        public void onItemSelected(Bundle movie);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -124,17 +139,11 @@ public class FetchMovieFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_refresh) {
 
-            updateMovie();
-           *//*FetchMovieTask movieTask = new FetchMovieTask();
-            movieTask.execute("popularity.desc");
-            return true;*//*
-        }*/
 
         return super.onOptionsItemSelected(item);
     }
+
 
 
     @Override
@@ -158,43 +167,47 @@ public class FetchMovieFragment extends Fragment {
         //Log.v("movieList size is", String.valueOf(movieList.size()));
 
         mMoviesGrid.setAdapter(mMovieAdapter);
+        //twopane case check mposition
+if (mTwoPane) {
+    if (MovieURL != null && !MovieURL.isEmpty()) {
+        mMovieAdapter.addAll(MovieURL);
+        mMovieAdapter.notifyDataSetChanged();
 
+        // Can be avoided if it is loader/cursor?
+        // Can also be used in setActivatedItem instead..
+        mMoviesGrid.smoothScrollToPosition(mPosition == GridView.INVALID_POSITION ? 0 : mPosition);
+        //showDetails(mPosition);
+    } else {
 
+        updateMovie();
+    }
+}
 
-
-        if (savedInstanceState != null) {
-            // Restore last state for checked position.
-            mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
-        }
-
-        if (mDualPane) {
-            // In dual-pane mode, the list view highlights the selected item.
-            mMoviesGrid.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            // Make sure our UI is in the correct state.
-            showDetails(0);
-        }
-
-
-
+// We'll call our MainActivity
 
 
         mMoviesGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //  Intent intent = new Intent(getActivity(), DetailActivity.class);
+
+
                 showDetails(position);
-
-
-
-
 
 
             }
         });
 
+
+
+
+
         return rootView;
     }
 
+    public void setIfTwoPane(boolean mTwoPane) {
+        this.mTwoPane = mTwoPane;
+    }
 
 
     void showDetails(int index) {
@@ -208,37 +221,30 @@ public class FetchMovieFragment extends Fragment {
         extras.putString("PrefParm", prefparam);
         extras.putString("MovieID", movie.getmMovieId());
 
-        Intent intent = new Intent(getActivity(), DetailActivity.class)
-                .putExtras(extras);
+
+        mPosition = index;
+        ((Callback) getActivity())
+                .onItemSelected(extras);
 
 
-        //if this is tablet view, take over that frame/fragment. dont take whole window
 
-        DetailActivity.DetailFragment displayFrag = (DetailActivity.DetailFragment) getFragmentManager()
-                .findFragmentById(R.id.movie_detail_container);
-
-        if (displayFrag == null) {
-            Log.e("v==", "null");
-            startActivity(intent);
-        } else {
-            Log.e("v==", "not null");
-            // fragment replacement stuff
-            DetailActivity.DetailFragment fragment = new DetailActivity.DetailFragment();
-            fragment.setArguments(extras);
-
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.movie_detail_container, fragment, "frag tag")
-                    .commit();
 
         }
-    }
+
     private void updateMovie() {
         FetchMovieTask movieTask = new FetchMovieTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortorder = prefs.getString(getString(R.string.pref_sortorder_key),
                 getString(R.string.pref_sortorder_mostpopular));
 
+
+        if( mSttingStatus!=sortorder)
+        {
+           mPosition=GridView.INVALID_POSITION;
+            mSttingStatus=sortorder;
+        }
         movieTask.execute(sortorder);
+
 
         //  movieTask.execute("popularity.desc");
     }
@@ -246,13 +252,13 @@ public class FetchMovieFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
         updateMovie();
-        // FetchMovieTask movieTask = new FetchMovieTask();
-        // movieTask.execute("popularity.desc");
+
+
 
 
     }
-
 
 
 
@@ -265,12 +271,11 @@ public class FetchMovieFragment extends Fragment {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-        //Take the String representing the complete forecast in JSON Format and
+        //Take the String representing the complete fetchmovie in JSON Format and
         // pull out the data we need to construct the Strings needed for the wireframes.
 
         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
         //into an Object hierarchy for us.
-
 
         private  List<MovieItem> getMovieDataFromJson(String fetchtMovieJsonStr)
                 throws JSONException {
@@ -302,20 +307,7 @@ public class FetchMovieFragment extends Fragment {
                 JSONObject movieDetail = movieArray.getJSONObject(i);
 
                 poster = movieDetail.getString(TMB_POSTER);
-             //   title = movieDetail.getString(TMB_TITLE);
-                //average = movieDetail.getString(TMB_VOTE_AVG);
 
-                //only need to return the poster for now
-                //but it doesn't hurt to have the other code already
-               // resultStrs[i] = "http://image.tmdb.org/t/p/w185"+poster;
-                //Set movie item
-              //  Bundle bundle ;
-
-            //  MovieItem movieItem;//= new MovieItem();
-               // movieItem.
-               // moviesList.add()
-            //  moviesList.add(new MovieItem(movieDetail.getString(TMB_POSTER));
-             //  MovieItem[] movieItem={new MovieItem }
 
                 moviesList.add(new MovieItem (movieDetail.getString(TMB_POSTER),
                         movieDetail.getString(TMB_TITLE),
@@ -324,34 +316,17 @@ public class FetchMovieFragment extends Fragment {
                         movieDetail.getString(TMB_VOTE_AVG),
                         movieDetail.getString(TMB_RELEASEDATE),
                         movieDetail.getString(TMB_ID)));
-              //  MovieURL. add(new MovieItem(movieDetail.getString(TMB_POSTER));
-
-               /* MovieURL. add(new MovieItem(movieDetail.getString(TMB_POSTER)),
-                        movieDetail.getString(TMB_TITLE),
-                        movieDetail.getString(TMB_POSTER),
-                        movieDetail.getString(TMB_OVERVIW),
-                        movieDetail.getString(TMB_VOTE_AVG),
-                        movieDetail.getString(TMB_RELEASEDATE),
-                        movieDetail.getString(TMB_ID)));*/
-              // movieItem.setMovieImageurl(movieDetail.getString(TMB_POSTER));
-              //  movieItem.setMovieTitle(movieDetail.getString(TMB_TITLE));
-              //  movieItem.setmMovieOverView(movieDetail.getString(TMB_OVERVIW));
-              //  movieItem.setmMovieVoteAverage(movieDetail.getString(TMB_VOTE_AVG));
-                //movieItem.setmMovieReleaseDate(movieDetail.getString(TMB_RELEASEDATE));
-              //  movieItem.setmMovieId(movieDetail.getString(TMB_ID));
 
 
-              //  InputStream input = connection.getInputStream();
-              //  Bitmap myBitmap = BitmapFactory.decodeStream(input);
-              Log.v(LOG_TAG,(movieDetail.getString(TMB_ID).toString()));
-                  //     moviesList.add(movieItem);
-              //  MovieData movie2=new MovieData(movies) ;
 
-                //movieList.add(poster);
+
+          //    Log.v(LOG_TAG,(movieDetail.getString(TMB_ID).toString()));
+
             }
 
             return moviesList;
         }
+        //get data from databse for favorite
         private  List<MovieItem> getMovieDataFromDB()
 
             throws DataFormatException {
@@ -386,13 +361,7 @@ public class FetchMovieFragment extends Fragment {
                             mMovieId ) );
 
 
-                          /*  movieItem.setMovieTitle(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE)));
-                    movieItem.setmMovieOverView(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW)));
-                    movieItem.setmMovieVoteAverage(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RATING)));
-                    movieItem.setmMovieReleaseDate(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_DATE)));
-                    movieItem.setmMovieId(cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));*/
 
-                   // moviesList.add(movieItem);
 
 
                 } while (cursor.moveToNext());
@@ -420,7 +389,7 @@ public class FetchMovieFragment extends Fragment {
             prefparam=params[0];
             if ("favorites".equals(params[0])) {
                 prefparam=params[0];
-                Log.v(LOG_TAG, params[0]);
+               // Log.v(LOG_TAG, params[0]);
                 try {
                     return getMovieDataFromDB();
                 } catch (DataFormatException e) {
@@ -456,8 +425,16 @@ public class FetchMovieFragment extends Fragment {
 
                     // Create the request to MovieDetails, and open the connection
                     Uri builtUri = Uri.parse(FETCHMOVIE_BASE_URL).buildUpon()
-                            .appendQueryParameter(QUERY_PARAM, params[0])
+
+                                .appendQueryParameter(QUERY_PARAM, params[0])
                             .appendQueryParameter(API_KEY, apikey).build();
+
+                 if ("upcoming".equals(params[0]))
+                  {
+                      builtUri=  Uri.parse("http://api.themoviedb.org/3/movie/upcoming?").buildUpon()
+
+                              .appendQueryParameter(API_KEY, apikey).build();
+                  }
                     URL url = new URL(builtUri.toString());
                     //  Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
@@ -524,28 +501,30 @@ public class FetchMovieFragment extends Fragment {
 
             super.onPostExecute(MovieList);
             //clear movie list and adapter
+
+
             if (MovieList != null) {
                // MovieURL.clear();
                 mMovieAdapter.clear();
 
 
+                mMovieAdapter.addAll(MovieList);
+
+
+               mMovieAdapter.notifyDataSetChanged();
+
+
+              //In twopane case set oth elsemet in details
+                if (mTwoPane && MovieList!= null && !MovieList.isEmpty() && mPosition == GridView.INVALID_POSITION ) {
+
+                    showDetails(0);
+
+                }
 
 
 
-                    mMovieAdapter.addAll(MovieList);
-                mMovieAdapter.notifyDataSetChanged();
-
-//                if (mPosition == ListView.INVALID_POSITION && MovieList != null && !MovieList.isEmpty()) {
-//                    // select first item (tablet/phone UI distinction cannot be made here, let MainActivity decide)
-//                    mPosition = 0;
-//                    ((Callback) getActivity()).onItemSelected(MovieList.get(0));
-//                } else {
-//                    mMoviesGrid .smoothScrollToPositionFromTop(mPosition, 0);
-//                }
-              //  }
 
 
-                // New data is back from the server.  Hooray!
             }
         }
     }
