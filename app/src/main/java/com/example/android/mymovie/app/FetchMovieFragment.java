@@ -62,7 +62,7 @@ public class FetchMovieFragment extends Fragment {
     private int mPosition = GridView.INVALID_POSITION;
     private boolean mUsedefaultitem;
 private static final String SETTING_KEY="settingkey";
-    private String mSttingStatus="";
+    private String mSettingStatus="";
     private static final String SELECTED_KEY = "selected_position";
   //  private static final String MOVIE_KEY ="keymovie" ;
 
@@ -84,7 +84,7 @@ private static final String SETTING_KEY="settingkey";
             MovieURL = savedInstanceState.getParcelableArrayList(getString(R.string.MOVIE_KEY));
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
             mTwoPane = savedInstanceState.getBoolean(TWO_PANE);
-            mSttingStatus = savedInstanceState.getString(SETTING_KEY);
+            mSettingStatus = savedInstanceState.getString(SETTING_KEY);
 
 
 
@@ -93,6 +93,7 @@ private static final String SETTING_KEY="settingkey";
         if (savedInstanceState==null || !savedInstanceState.containsKey(getString(R.string.MOVIE_KEY))) {
             MovieURL=new ArrayList<>();
             mPosition=GridView.INVALID_POSITION;
+            mSettingStatus="";
 
 
         }
@@ -115,7 +116,7 @@ private static final String SETTING_KEY="settingkey";
         outState.putParcelableArrayList(getString(R.string.MOVIE_KEY), MovieURL);
         outState.putInt(SELECTED_KEY, mPosition);
         outState.putBoolean(TWO_PANE, mTwoPane);
-        outState.putString(SETTING_KEY,mSttingStatus);
+        outState.putString(SETTING_KEY,mSettingStatus);
 
       // outState.putParcelableArrayList(getString(R.string.MOVIE_KEY), MovieURL);*/
         super.onSaveInstanceState(outState);
@@ -232,18 +233,20 @@ if (mTwoPane) {
         }
 
     private void updateMovie() {
-        FetchMovieTask movieTask = new FetchMovieTask();
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sortorder = prefs.getString(getString(R.string.pref_sortorder_key),
                 getString(R.string.pref_sortorder_mostpopular));
 
 
-        if( mSttingStatus!=sortorder)
+        if( mSettingStatus!=sortorder)
         {
            mPosition=GridView.INVALID_POSITION;
-            mSttingStatus=sortorder;
+            mSettingStatus=sortorder;
+            FetchMovieTask movieTask = new FetchMovieTask();
+            movieTask.execute(sortorder);
         }
-        movieTask.execute(sortorder);
+
 
 
         //  movieTask.execute("popularity.desc");
@@ -320,7 +323,7 @@ if (mTwoPane) {
 
 
 
-          //    Log.v(LOG_TAG,(movieDetail.getString(TMB_ID).toString()));
+         //   Log.v(LOG_TAG, (movieDetail.getString(TMB_ID).toString()));
 
             }
 
@@ -362,7 +365,7 @@ if (mTwoPane) {
 
 
 
-
+               //     Log.v(LOG_TAG, "Hello");
 
                 } while (cursor.moveToNext());
 
@@ -412,6 +415,7 @@ if (mTwoPane) {
 
 
 
+
                 try {
                     // Construct the URL for the Fetchmovie query
                     // Possible parameters are avaiable at OWM's Fetchmovie API page, at
@@ -420,6 +424,7 @@ if (mTwoPane) {
                     final String FETCHMOVIE_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
                     final String QUERY_PARAM = "sort_by";
                     final String API_KEY = "api_key";
+
                     //
 
 
